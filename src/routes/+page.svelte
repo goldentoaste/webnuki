@@ -1,10 +1,12 @@
 <script lang="ts">
+    import { Board } from "$lib/board";
     import Button from "$lib/components/Button.svelte";
     import MessageList from "$lib/components/MessageList.svelte";
     import InputField from "$lib/components/inputField.svelte";
     import "./global.css";
-    // import { makeConnection } from "$lib/connection";
     import { onMount } from "svelte";
+
+    //  peer connection garbage.
     let makeCon: (
         onOpen: any,
         onMessage: Function,
@@ -13,7 +15,6 @@
     ) => (msg: string) => void;
     onMount(async () => {
         const { makeConnection } = await import("$lib/connection");
-
         // @ts-ignore
         makeCon = makeConnection;
     });
@@ -27,7 +28,7 @@
 
     let onOpen = () => {
         console.log("connection opened!");
-        
+
         sendMessage("opened!");
         gameStarted = true;
     };
@@ -39,11 +40,19 @@
     };
 
     function tryConnect() {
-        if (roomName.length == 0){
-            return alert("Must include a room name to connect or create game!")
+        if (roomName.length == 0) {
+            return alert("Must include a room name to connect or create game!");
         }
         sendMessage = makeCon(onOpen, onMessage, roomName, isHost);
     }
+
+    let board: Board;
+   onMount(() => {
+        // ninuki board state
+        board = new Board(7);
+    });
+
+    
 </script>
 
 <h1>WebNuki!</h1>
@@ -81,8 +90,23 @@
         placeholder="message to send here"
         bind:value={currentMessage}
     />
-    <Button on:click={()=>sendMessage(currentMessage)}>Send</Button>
+    <Button on:click={() => sendMessage(currentMessage)}>Send</Button>
 </div>
+
+<h2>Testing board</h2>
+{#if board}
+    <p>
+        Board should be here:
+        {board.board}
+    </p>
+    <p>board's current player: {board.curPlayer}</p>
+
+    <Button
+        on:click={() => {
+            board.test();
+        }}
+    />
+{/if}
 
 <style>
     .rowGroup {

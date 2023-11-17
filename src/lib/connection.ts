@@ -5,7 +5,6 @@ import { Peer } from "peerjs";
 let peer: Peer;
 export function makeConnection(onOpen: (con: any) => void, onMessage: (data: string) => void, roomName: string = "", isHost = false,) {
 
-
     const roomId = roomName.concat("bdef613a-3672-4588-b467-7388b9d62fba");
     let connection: any;
     if (isHost) {
