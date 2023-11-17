@@ -14,8 +14,9 @@
         hovering = false;
     }}
     on:click
-    {style}
     on:keydown
+    {style}
+
 >
     <div class="decor n1" class:hExpand={hovering} />
     <div class="decor n2" class:hExpand={hovering} />

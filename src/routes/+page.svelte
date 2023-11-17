@@ -81,7 +81,7 @@
         placeholder="message to send here"
         bind:value={currentMessage}
     />
-    <Button>Send</Button>
+    <Button on:click={()=>sendMessage(currentMessage)}>Send</Button>
 </div>
 
 <style>
