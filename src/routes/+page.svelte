@@ -52,7 +52,7 @@
         board = new Board(7);
     });
 
-    
+
 </script>
 
 <h1>WebNuki!</h1>
@@ -95,11 +95,11 @@
 
 <h2>Testing board</h2>
 {#if board}
-    <p>
+    <!-- <p>
         Board should be here:
         {board.board}
-    </p>
-    <p>board's current player: {board.curPlayer}</p>
+    </p> -->
+    <!-- <p>board's current player: {board.curPlayer}</p> -->
 
     <Button
         on:click={() => {
