@@ -36,20 +36,22 @@
     let roomName = "";
     let isHost = false;
     let gameStarted = false;
-    let messages: string[] = [];
+    let messages: string[] = [
+        "welcome to webnuki",
+        "messages and plays will be here",
+    ];
     let currentMessage = "";
     let sendMessage: (msg: string) => void;
 
     let onOpen = () => {
         gameStarted = true;
-        sendMessage(`hello from ${isHost? 'host': 'client'}`)
-        if (isHost){
-            newGame()
+        sendMessage(`hello from ${isHost ? "host" : "client"}`);
+        if (isHost) {
+            newGame();
         }
     };
 
     let onMessage = (msg: string) => {
-        
         messages = [msg, ...messages];
 
         const blocks = msg.split(" ");
@@ -105,13 +107,13 @@
     }
 
     $: {
-        if ($lastPlay !== undefined){
-            sendMessage(`#play ${$lastPlay[0]},${$lastPlay[1]}`)
+        if ($lastPlay !== undefined) {
+            sendMessage(`#play ${$lastPlay[0]},${$lastPlay[1]}`);
         }
     }
 
-    $:{
-        if ($winningPlayer != EMPTY){
+    $: {
+        if ($winningPlayer != EMPTY) {
             gameStarted = false;
         }
     }
@@ -149,7 +151,6 @@
 <h2>Board</h2>
 <div class="rowGroup">
     <div>
-       
         <canvas
             id="nukiCanvas"
             bind:this={canvas}
@@ -162,7 +163,7 @@
             <p>Current player: {colorToName($currentPlayer)}</p>
             <p>Black score: {$blackScore}</p>
             <p>White score: {$whiteScore}</p>
-        
+
             {#if $winningPlayer != EMPTY}
                 {colorToName($winningPlayer)} has won the game!
             {/if}
@@ -171,31 +172,31 @@
                 {board.board}
             </p> -->
             <!-- <p>board's current player: {board.curPlayer}</p> -->
-        
+
             {#if isHost}
                 <Button on:click={newGame}>New Game</Button>
             {/if}
         {/if}
     </div>
 
-    
-<div>
-    <MessageList data={messages} />
-    <div class="rowGroup">
-        <InputField
-            placeholder="message to send here"
-            bind:value={currentMessage}
-        />
-        <Button on:click={() => sendMessage(currentMessage)}>Send</Button>
+    <div>
+        <MessageList data={messages} />
+        <div class="rowGroup">
+            <InputField
+                placeholder="message to send here"
+                bind:value={currentMessage}
+            />
+            <Button
+                on:click={() => {
+                    messages.unshift(currentMessage);
+                    messages = messages;
+                    sendMessage(currentMessage);
+                    currentMessage = "";
+                }}>Send</Button
+            >
+        </div>
     </div>
 </div>
-
-</div>
-
-
-
-
-
 
 <style>
     .rowGroup {

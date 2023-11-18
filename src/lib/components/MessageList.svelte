@@ -11,7 +11,7 @@
 <div class="messageContainer">
 
 {#each data as msg}
-    <p>{msg}</p>
+    <span class="msgItem">{msg}</span>
 {/each}
 </div>
 
@@ -33,5 +33,11 @@
         border:  solid 2px var(--fg1);
 
         height: 500px;
+    }
+
+
+    .msgItem {
+        padding: 0.75rem;
+        border-top: 2px solid var(--bg3);
     }
 </style>
