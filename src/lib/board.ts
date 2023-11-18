@@ -364,12 +364,12 @@ export class Board {
 
     clickEvent(e: MouseEvent) {
         const [row, col] = this.roundToNearestPoint(e.offsetX, e.offsetY);
-        if ( this.board[row][col] != EMPTY ) {
-            return;
-        }
-        // if (this.currentPlayer != this.playerColor || this.board[row][col] != EMPTY ) {
+        // if ( this.board[row][col] != EMPTY ) {
         //     return;
         // }
+        if (this.currentPlayer != this.playerColor || this.board[row][col] != EMPTY ) {
+            return;
+        }
         this.playMove(row, col);
         lastPlay.set([row, col])
     }
