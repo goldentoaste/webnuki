@@ -54,18 +54,12 @@ export function makeConnection(onOpen: (con: any) => void, onMessage: (data: str
 
         peer.on("close", ()=>{  clearInterval(interval);})
         peer.on("error", ()=>{  clearInterval(interval);})
-       
-
     }
-    console.log("trying to make connection");
-
-
 
     const sendMessage = (message: string) => {
         if (connection === undefined) {
             return console.log("connection not open yet, can't send message")
         }
-        console.log("sending message!", message, connection);
 
         connection.send(message);
     }

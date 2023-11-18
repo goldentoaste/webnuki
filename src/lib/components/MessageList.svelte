@@ -31,5 +31,7 @@
         min-width: 300px;
 
         border:  solid 2px var(--fg1);
+
+        height: 500px;
     }
 </style>

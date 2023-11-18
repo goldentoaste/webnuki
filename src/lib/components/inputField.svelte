@@ -8,6 +8,8 @@
     import { fade, fly } from "svelte/transition";
     let showMsg = false;
     function onClick() {
+        console.log("on clickk");
+        
         if (disabled && value.length > 0) {
             navigator.clipboard.writeText(value).then((e) => {
                 showMsg = true;
@@ -30,7 +32,7 @@
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
-<div class="parent" on:click={onClick}>
+<div class="parent">
     <input
         type="text"
         {placeholder}
@@ -39,6 +41,7 @@
         class:clickable={disabled}
         {pattern}
         on:input={checkInput}
+        on:click={onClick}
         {value}
     />
 
@@ -79,7 +82,7 @@
     .clickable {
         cursor: pointer;
         transition: filter 0.5s ease-out;
-        user-select: none;
+        /* user-select: none; */
     }
     .clickable:hover {
         filter: brightness(1.2);

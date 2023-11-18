@@ -1,5 +1,19 @@
 <script lang="ts">
-    import { Board } from "$lib/board";
+    import {
+        Board,
+        BLACK,
+        EMPTY,
+        WALL,
+        WHITE,
+        blackScore,
+        colorToName,
+        currentPlayer,
+        lastPlay,
+        opponent,
+        whiteScore,
+        winningPlayer,
+        playerColor,
+    } from "$lib/board";
     import Button from "$lib/components/Button.svelte";
     import MessageList from "$lib/components/MessageList.svelte";
     import InputField from "$lib/components/inputField.svelte";
@@ -27,16 +41,31 @@
     let sendMessage: (msg: string) => void;
 
     let onOpen = () => {
-        console.log("connection opened!");
-
-        sendMessage("opened!");
         gameStarted = true;
+        sendMessage(`hello from ${isHost? 'host': 'client'}`)
+        if (isHost){
+            newGame()
+        }
     };
 
     let onMessage = (msg: string) => {
-        console.log(msg);
-        messages.push(msg);
-        messages = messages;
+        
+        messages = [msg, ...messages];
+
+        const blocks = msg.split(" ");
+        if (blocks[0] === "#reset") {
+            // other player just did reset, requesting us to reset
+            const color = parseInt(blocks[1]);
+            reset(color);
+        }
+
+        if (blocks[0] == "#play") {
+            // other just played a move, request us to play the same move to stay in sync
+            const [row, col] = blocks[1]
+                .split(",")
+                .map((item) => parseInt(item));
+            play(row, col);
+        }
     };
 
     function tryConnect() {
@@ -47,12 +76,45 @@
     }
 
     let board: Board;
-   onMount(() => {
+    let canvas: HTMLCanvasElement;
+    onMount(() => {
         // ninuki board state
-        board = new Board(7);
+        board = new Board(7, canvas);
     });
 
+    /*
+    Messages to handle
+    #play row,col - plays for the current player
+    #reset color - calls for reset, also set the player color to color. (always start with black player)
+    */
 
+    function newGame() {
+        const myColor = Math.random() > 0.5 ? 1 : 2;
+        const opColor = opponent(myColor);
+
+        reset(myColor);
+        sendMessage(`#reset ${opColor}`);
+    }
+
+    function reset(color: number) {
+        gameStarted = true;
+        board.reset(color);
+    }
+    function play(row: number, col: number) {
+        board.playMove(row, col);
+    }
+
+    $: {
+        if ($lastPlay !== undefined){
+            sendMessage(`#play ${$lastPlay[0]},${$lastPlay[1]}`)
+        }
+    }
+
+    $:{
+        if ($winningPlayer != EMPTY){
+            gameStarted = false;
+        }
+    }
 </script>
 
 <h1>WebNuki!</h1>
@@ -84,36 +146,71 @@
     >
 </div>
 
-<MessageList data={messages} />
+<h2>Board</h2>
 <div class="rowGroup">
-    <InputField
-        placeholder="message to send here"
-        bind:value={currentMessage}
-    />
-    <Button on:click={() => sendMessage(currentMessage)}>Send</Button>
+    <div>
+       
+        <canvas
+            id="nukiCanvas"
+            bind:this={canvas}
+            class:noclick={!gameStarted}
+            width="500px"
+            height="500px"
+        />
+        {#if board}
+            <p>You are player: {colorToName($playerColor)}</p>
+            <p>Current player: {colorToName($currentPlayer)}</p>
+            <p>Black score: {$blackScore}</p>
+            <p>White score: {$whiteScore}</p>
+        
+            {#if $winningPlayer != EMPTY}
+                {colorToName($winningPlayer)} has won the game!
+            {/if}
+            <!-- <p>
+                Board should be here:
+                {board.board}
+            </p> -->
+            <!-- <p>board's current player: {board.curPlayer}</p> -->
+        
+            {#if isHost}
+                <Button on:click={newGame}>New Game</Button>
+            {/if}
+        {/if}
+    </div>
+
+    
+<div>
+    <MessageList data={messages} />
+    <div class="rowGroup">
+        <InputField
+            placeholder="message to send here"
+            bind:value={currentMessage}
+        />
+        <Button on:click={() => sendMessage(currentMessage)}>Send</Button>
+    </div>
 </div>
 
-<h2>Testing board</h2>
-{#if board}
-    <!-- <p>
-        Board should be here:
-        {board.board}
-    </p> -->
-    <!-- <p>board's current player: {board.curPlayer}</p> -->
+</div>
 
-    <Button
-        on:click={() => {
-            board.test();
-        }}
-    />
-{/if}
+
+
+
+
 
 <style>
     .rowGroup {
         display: flex;
         flex-direction: row;
         gap: 0.5rem;
-
         margin: 1rem;
+    }
+
+    canvas {
+        border: 2px solid var(--fg1);
+        /* padding: 0.5rem; */
+    }
+
+    .noclick {
+        pointer-events: none;
     }
 </style>
