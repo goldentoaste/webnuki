@@ -81,7 +81,7 @@
     let canvas: HTMLCanvasElement;
     onMount(() => {
         // ninuki board state
-        board = new Board(7, canvas);
+        board = new Board(15, canvas);
     });
 
     /*
@@ -155,8 +155,8 @@
             id="nukiCanvas"
             bind:this={canvas}
             class:noclick={!gameStarted}
-            width="500px"
-            height="500px"
+            width="700px"
+            height="700px"
         />
         {#if board}
             <p>You are player: {colorToName($playerColor)}</p>
