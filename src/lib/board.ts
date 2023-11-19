@@ -221,13 +221,16 @@ export class Board {
             whiteScore.set(this.whiteScore);
         }
 
-        this.currentPlayer = opColor;
-        currentPlayer.set(opColor);
+        
+
 
         if (this.blackScore >= 10 || this.whiteScore >= 10) {
             this.rerender = true;
             return this.setWinner();
         }
+
+        this.currentPlayer = opColor;
+        currentPlayer.set(opColor);
         this.rerender = true;
     }
 
@@ -367,7 +370,7 @@ export class Board {
         // if ( this.board[row][col] != EMPTY ) {
         //     return;
         // }
-        if (this.currentPlayer != this.playerColor || this.board[row][col] != EMPTY ) {
+        if (this.currentPlayer != this.playerColor || this.board[row][col] != EMPTY) {
             return;
         }
         this.playMove(row, col);

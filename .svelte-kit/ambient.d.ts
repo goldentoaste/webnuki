@@ -29,6 +29,7 @@ declare module '$env/static/private' {
 	export const ALLUSERSPROFILE: string;
 	export const ANDROID_SDK_ROOT: string;
 	export const APPDATA: string;
+	export const APPLICATION_INSIGHTS_NO_DIAGNOSTIC_CHANNEL: string;
 	export const CHROME_CRASHPAD_PIPE_NAME: string;
 	export const COLOR: string;
 	export const COLORTERM: string;
@@ -36,11 +37,11 @@ declare module '$env/static/private' {
 	export const CommonProgramW6432: string;
 	export const COMPUTERNAME: string;
 	export const ComSpec: string;
+	export const CONDA_EXE: string;
 	export const DriverData: string;
 	export const EDITOR: string;
 	export const FPS_BROWSER_APP_PROFILE_STRING: string;
 	export const FPS_BROWSER_USER_PROFILE_STRING: string;
-	export const GIT_ASKPASS: string;
 	export const GIT_LFS_PATH: string;
 	export const HOME: string;
 	export const HOMEDRIVE: string;
@@ -50,9 +51,9 @@ declare module '$env/static/private' {
 	export const JAVA_HOME: string;
 	export const LANG: string;
 	export const LOCALAPPDATA: string;
+	export const LOCAL_GIT_DIRECTORY: string;
 	export const LOGONSERVER: string;
 	export const NODE: string;
-	export const NODE_ENV: string;
 	export const NODE_EXE: string;
 	export const NPM_CLI_JS: string;
 	export const npm_command: string;
@@ -65,7 +66,6 @@ declare module '$env/static/private' {
 	export const npm_config_metrics_registry: string;
 	export const npm_config_node_gyp: string;
 	export const npm_config_noproxy: string;
-	export const npm_config_npm_version: string;
 	export const npm_config_prefix: string;
 	export const npm_config_userconfig: string;
 	export const npm_config_user_agent: string;
@@ -73,13 +73,20 @@ declare module '$env/static/private' {
 	export const npm_lifecycle_event: string;
 	export const npm_lifecycle_script: string;
 	export const npm_node_execpath: string;
+	export const npm_package_dev: string;
+	export const npm_package_dev_optional: string;
+	export const npm_package_engines_node: string;
+	export const npm_package_integrity: string;
 	export const npm_package_json: string;
 	export const npm_package_name: string;
+	export const npm_package_optional: string;
+	export const npm_package_peer: string;
+	export const npm_package_resolved: string;
 	export const npm_package_version: string;
 	export const NPM_PREFIX_NPM_CLI_JS: string;
 	export const NUMBER_OF_PROCESSORS: string;
 	export const OneDrive: string;
-	export const OneDriveConsumer: string;
+	export const OPENSSL_ia32cap: string;
 	export const ORIGINAL_XDG_CURRENT_DESKTOP: string;
 	export const OS: string;
 	export const Path: string;
@@ -105,13 +112,11 @@ declare module '$env/static/private' {
 	export const USERDOMAIN_ROAMINGPROFILE: string;
 	export const USERNAME: string;
 	export const USERPROFILE: string;
-	export const VSCODE_GIT_ASKPASS_EXTRA_ARGS: string;
-	export const VSCODE_GIT_ASKPASS_MAIN: string;
-	export const VSCODE_GIT_ASKPASS_NODE: string;
-	export const VSCODE_GIT_IPC_HANDLE: string;
-	export const VSCODE_INJECTION: string;
+	export const VBOX_MSI_INSTALL_PATH: string;
 	export const windir: string;
 	export const ZES_ENABLE_SYSMAN: string;
+	export const _CONDA_EXE: string;
+	export const _CONDA_ROOT: string;
 }
 
 /**
@@ -144,6 +149,7 @@ declare module '$env/dynamic/private' {
 		ALLUSERSPROFILE: string;
 		ANDROID_SDK_ROOT: string;
 		APPDATA: string;
+		APPLICATION_INSIGHTS_NO_DIAGNOSTIC_CHANNEL: string;
 		CHROME_CRASHPAD_PIPE_NAME: string;
 		COLOR: string;
 		COLORTERM: string;
@@ -151,11 +157,11 @@ declare module '$env/dynamic/private' {
 		CommonProgramW6432: string;
 		COMPUTERNAME: string;
 		ComSpec: string;
+		CONDA_EXE: string;
 		DriverData: string;
 		EDITOR: string;
 		FPS_BROWSER_APP_PROFILE_STRING: string;
 		FPS_BROWSER_USER_PROFILE_STRING: string;
-		GIT_ASKPASS: string;
 		GIT_LFS_PATH: string;
 		HOME: string;
 		HOMEDRIVE: string;
@@ -165,9 +171,9 @@ declare module '$env/dynamic/private' {
 		JAVA_HOME: string;
 		LANG: string;
 		LOCALAPPDATA: string;
+		LOCAL_GIT_DIRECTORY: string;
 		LOGONSERVER: string;
 		NODE: string;
-		NODE_ENV: string;
 		NODE_EXE: string;
 		NPM_CLI_JS: string;
 		npm_command: string;
@@ -180,7 +186,6 @@ declare module '$env/dynamic/private' {
 		npm_config_metrics_registry: string;
 		npm_config_node_gyp: string;
 		npm_config_noproxy: string;
-		npm_config_npm_version: string;
 		npm_config_prefix: string;
 		npm_config_userconfig: string;
 		npm_config_user_agent: string;
@@ -188,13 +193,20 @@ declare module '$env/dynamic/private' {
 		npm_lifecycle_event: string;
 		npm_lifecycle_script: string;
 		npm_node_execpath: string;
+		npm_package_dev: string;
+		npm_package_dev_optional: string;
+		npm_package_engines_node: string;
+		npm_package_integrity: string;
 		npm_package_json: string;
 		npm_package_name: string;
+		npm_package_optional: string;
+		npm_package_peer: string;
+		npm_package_resolved: string;
 		npm_package_version: string;
 		NPM_PREFIX_NPM_CLI_JS: string;
 		NUMBER_OF_PROCESSORS: string;
 		OneDrive: string;
-		OneDriveConsumer: string;
+		OPENSSL_ia32cap: string;
 		ORIGINAL_XDG_CURRENT_DESKTOP: string;
 		OS: string;
 		Path: string;
@@ -220,13 +232,11 @@ declare module '$env/dynamic/private' {
 		USERDOMAIN_ROAMINGPROFILE: string;
 		USERNAME: string;
 		USERPROFILE: string;
-		VSCODE_GIT_ASKPASS_EXTRA_ARGS: string;
-		VSCODE_GIT_ASKPASS_MAIN: string;
-		VSCODE_GIT_ASKPASS_NODE: string;
-		VSCODE_GIT_IPC_HANDLE: string;
-		VSCODE_INJECTION: string;
+		VBOX_MSI_INSTALL_PATH: string;
 		windir: string;
 		ZES_ENABLE_SYSMAN: string;
+		_CONDA_EXE: string;
+		_CONDA_ROOT: string;
 		[key: `PUBLIC_${string}`]: undefined;
 		[key: `${string}`]: string | undefined;
 	}
