@@ -17,7 +17,7 @@
     import Button from "$lib/components/Button.svelte";
     import MessageList from "$lib/components/MessageList.svelte";
     import InputField from "$lib/components/inputField.svelte";
-    import "./global.css";
+   
     import { onMount } from "svelte";
 
     //  peer connection garbage.

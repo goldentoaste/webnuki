@@ -9,20 +9,19 @@
     let showMsg = false;
     function onClick() {
         console.log("on clickk");
-        
+
         if (disabled && value.length > 0) {
             navigator.clipboard.writeText(value).then((e) => {
                 showMsg = true;
                 setTimeout(() => {
                     showMsg = false;
-                }, 1000);
+                }, 500);
             });
         }
     }
 
-    let inputField : HTMLInputElement;
-    function checkInput(event : any) {
- 
+    let inputField: HTMLInputElement;
+    function checkInput(event: any) {
         if (!pattern || inputField.checkValidity()) {
             value = inputField.value;
         } else {
@@ -32,16 +31,16 @@
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
-<div class="parent">
+<!-- svelte-ignore a11y-no-static-element-interactions -->
+<div class="parent" class:clickable={disabled} on:click={onClick}>
     <input
         type="text"
         {placeholder}
         bind:this={inputField}
         {disabled}
-        class:clickable={disabled}
+        class:disabled
         {pattern}
         on:input={checkInput}
-        on:click={onClick}
         {value}
     />
 
@@ -50,8 +49,9 @@
             class="msg"
             in:fly={{
                 x: -10,
+                duration:500
             }}
-            out:fade={{ duration: 200 }}
+            out:fade={{ duration: 300 }}
         >
             Copied!
         </div>
@@ -65,6 +65,7 @@
         align-self: stretch;
         position: relative;
         display: flex;
+        width: fit-content  ;
     }
     input {
         all: unset;
@@ -80,12 +81,17 @@
     }
 
     .clickable {
-        cursor: pointer;
         transition: filter 0.5s ease-out;
-        /* user-select: none; */
+        cursor: pointer;
     }
+
     .clickable:hover {
         filter: brightness(1.2);
+    }
+
+    .disabled {
+        user-select: none;
+        pointer-events: none;
     }
 
     .msg {

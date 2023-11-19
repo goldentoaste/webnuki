@@ -1,5 +1,6 @@
 <script>
-    import { onMount } from "svelte";
+    import InputField from "$lib/components/inputField.svelte";
+import { onMount } from "svelte";
 
     onMount(async () => {
         const {test} =  await import("$lib/test");
@@ -8,3 +9,7 @@
 </script>
 
 <h1>testing page</h1>
+
+
+
+<InputField disabled={true} value="abc def"></InputField>
