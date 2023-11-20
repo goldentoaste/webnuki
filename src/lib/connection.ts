@@ -8,14 +8,7 @@ export function makeConnection(onOpen: (con: any) => void, onMessage: (data: str
     const roomId = roomName.concat("bdef613a-3672-4588-b467-7388b9d62fba");
     let connection: any;
     if (isHost) {
-        peer = new Peer(roomId, {
-            host:"https://9000-peers-peerjsserver-6ga75zwrsfk.ws-us106.gitpod.io",
-            key:"",
-            path:"/",
-
-        });
-        setTimeout(()=>(console.log(peer)), 500
-        )
+        peer = new Peer(roomId, );
 
         peer.on("connection", (con) => {
             console.log("connection is made!", con.peer);
@@ -37,13 +30,7 @@ export function makeConnection(onOpen: (con: any) => void, onMessage: (data: str
         })
     }
     else {
-        peer = new Peer({
-
-            host:"https://9000-peers-peerjsserver-6ga75zwrsfk.ws-us106.gitpod.io",
-            key:"",
-            path:"/",
-
-        });
+        peer = new Peer();
 
         const interval = setInterval(()=>{
             connection = peer.connect(roomId);
