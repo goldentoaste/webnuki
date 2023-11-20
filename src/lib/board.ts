@@ -162,7 +162,7 @@ export class Board {
     lastMove = [-1, -1]
     playMove(row: number, col: number) {
         this.board[row][col] = this.currentPlayer;
-        lastMove = [row, col]
+        this.lastMove = [row, col]
         // check for five in a row
         let hasFive = false;
         for (let dir of dirs) {
