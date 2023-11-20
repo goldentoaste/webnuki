@@ -159,8 +159,10 @@ export class Board {
 
     }
 
+    lastMove = [-1, -1]
     playMove(row: number, col: number) {
         this.board[row][col] = this.currentPlayer;
+        lastMove = [row, col]
         // check for five in a row
         let hasFive = false;
         for (let dir of dirs) {
@@ -221,7 +223,7 @@ export class Board {
             whiteScore.set(this.whiteScore);
         }
 
-        
+
 
 
         if (this.blackScore >= 10 || this.whiteScore >= 10) {
@@ -315,6 +317,11 @@ export class Board {
                     ctx.strokeStyle = "#f5f5f5"
                     ctx.fillStyle = "#dedede"
                 }
+
+                if (r == this.lastMove[0] && c == this.lastMove[1]) {
+                    ctx.strokeStyle = "#fb5a48de"
+                }
+
                 ctx.beginPath()
                 ctx.ellipse(c * gap, r * gap, pieceRadius, pieceRadius, 0, 0, Math.PI * 2, false);
                 ctx.fill()
