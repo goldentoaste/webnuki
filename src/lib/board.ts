@@ -224,9 +224,6 @@ export class Board {
             whiteScore.set(this.whiteScore);
         }
 
-
-
-
         if (this.blackScore >= 10 || this.whiteScore >= 10) {
             this.rerender = true;
             return this.setWinner();
@@ -281,20 +278,20 @@ export class Board {
         ctx.lineWidth = 1
 
         //draw vert lines
-        for (let i = 0; i < this.size + 2; i++) {
+        for (let i = 1; i < this.size + 1; i++) {
 
             ctx.beginPath()
-            ctx.moveTo(i * gap, 0);
-            ctx.lineTo(i * gap, h);
+            ctx.moveTo(i * gap, gap);
+            ctx.lineTo(i * gap, h - gap + 4);
             ctx.stroke();
             ctx.closePath()
         }
 
         //draw hori lines
-        for (let i = 0; i < this.size + 2; i++) {
+        for (let i = 1; i < this.size + 1; i++) {
             ctx.beginPath()
-            ctx.moveTo(0, i * gap);
-            ctx.lineTo(w, i * gap);
+            ctx.moveTo(gap - 1, i * gap);
+            ctx.lineTo(w - gap + 5, i * gap);
             ctx.stroke();
             ctx.closePath()
         }
