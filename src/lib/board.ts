@@ -344,7 +344,7 @@ export class Board {
             return;
         }
         const gap = this.gapSize(w);
-        const color =  this.selfPlay ? currentPlayer : playerColor;
+        const color =  this.selfPlay ? this.currentPlayer : this.playerColor;
 
         if (color == BLACK) {
             ctx.strokeStyle = "#0d0c09"
