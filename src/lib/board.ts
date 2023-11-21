@@ -80,6 +80,7 @@ export class Board {
     canvas: HTMLCanvasElement;
     rerender = false;
 
+    selfPlay = false;
 
     constructor(size: number, canvas: HTMLCanvasElement) {
         this.size = size;
@@ -346,7 +347,9 @@ export class Board {
             return;
         }
         const gap = this.gapSize(w);
-        if (this.playerColor == BLACK) {
+        const color =  this.selfPlay ? currentPlayer : playerColor;
+
+        if (color == BLACK) {
             ctx.strokeStyle = "#0d0c09"
             ctx.fillStyle = "#2b282088"
         }
@@ -377,7 +380,7 @@ export class Board {
         // if ( this.board[row][col] != EMPTY ) {
         //     return;
         // }
-        if (this.currentPlayer != this.playerColor || this.board[row][col] != EMPTY) {
+        if ((this.currentPlayer != this.playerColor && !this.selfPlay) || this.board[row][col] != EMPTY) {
             return;
         }
         this.playMove(row, col);

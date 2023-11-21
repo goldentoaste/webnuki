@@ -146,6 +146,15 @@
         }}
         disabled={gameStarted || isHost}>Connect to room</Button
     >
+
+    <Button 
+    on:click={()=>{
+        gameStarted = true;
+        board.selfPlay = true;
+    }}
+    disabled={gameStarted}>
+        Self play
+    </Button>
 </div>
 
 <h2>Board</h2>
