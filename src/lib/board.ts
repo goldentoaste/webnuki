@@ -15,7 +15,7 @@ interface BoardState {
 
 interface History {
 
-    color : number,
+    color: number,
     position: number[],
     captures: number[][]
 }
@@ -93,8 +93,11 @@ export class Board {
 
     selfPlay = false;
 
-    historyArr : History[];
+    historyArr: History[];
     historyIndex = 0;
+
+    letterMetrics: TextMetrics[] = [];
+    numberMetrics: TextMetrics[] = [];
 
     constructor(size: number, canvas: HTMLCanvasElement) {
         this.size = size;
@@ -120,18 +123,27 @@ export class Board {
         window.requestAnimationFrame(this.paint.bind(this));
         canvas.addEventListener("mousemove", this.hoverEvent.bind(this))
         canvas.addEventListener("mouseup", this.clickEvent.bind(this))
+
+
+        const ctx = canvas.getContext("2d")
+        ctx.font = "14pt sans-serif";
+        // init metrics
+        for (let i = 0; i < size; i++) {
+            this.letterMetrics.push(ctx?.measureText(String.fromCharCode(i + 65)));
+            this.numberMetrics.push(ctx?.measureText((i + 1) + ""));
+        }
     }
 
-    addToHistory(h:History){
+    addToHistory(h: History) {
         this.historyArr.push(h);
         this.historyIndex++;
     }
 
 
-    rewind(index){
+    rewind(index) {
         // reverses the gamestate after
     }
-    
+
 
     test() {
         this.board[1][1] += 1;
@@ -263,14 +275,14 @@ export class Board {
         this.winningPlayer = this.currentPlayer;
         winningPlayer.set(this.currentPlayer);
     }
-    
-    
-    updateScore(color, change){
-        if(color ==BLACK){
+
+
+    updateScore(color, change) {
+        if (color == BLACK) {
             this.blackScore += change;
             blackScore.set(this.blackScore);
         }
-        else if (color == WHITE){
+        else if (color == WHITE) {
             this.whiteScore += change;
             whiteScore.set(this.whiteScore)
         }
@@ -304,19 +316,25 @@ export class Board {
         return Math.round(width / (this.size + 1));
     }
 
-    drawCoords(ctx : CanvasRenderingContext2D, w: number, h:number){
+    drawCoords(ctx: CanvasRenderingContext2D, w: number, h: number) {
         const gap = this.gapSize(w);
+        const halfGap = gap / 2;
         // ctx.font = "12px FiraMono";
-        ctx.font = "16pt sans-serif";
+        ctx.font = "14pt sans-serif";
         // console.log(ctx.font);
         ctx.fillStyle = "#3c3836";
+        for (let i = 1; i < this.size + 1; i++) {
+            const metric = this.letterMetrics[i - 1];
+            ctx.fillText(String.fromCharCode(i + 64), i * gap - metric.width / 2, gap / 2 - metric.actualBoundingBoxDescent);
+            ctx.fillText(String.fromCharCode(i + 64), i * gap - metric.width / 2, h);
+        }
 
-        const metric = ctx.measureText("I");
+        for (let i = 1; i < this.size + 1; i++) {
 
-        // draw columns / letters
-        for (let i = 1; i < this.size + 1; i++){
-            ctx.fillText(String.fromCharCode(i + 64), i * gap - metric.width/2, gap);
-            ctx.fillText(String.fromCharCode(i + 64), i * gap - metric.width/2, h - gap) ;
+            const num = this.size - i + 1;
+            const metric = this.numberMetrics[num - 1];
+            ctx.fillText((num) + "", halfGap - metric.width, i * gap + 7);
+            ctx.fillText((num) + "", w - halfGap, i * gap + 7);
         }
     }
 
@@ -391,7 +409,7 @@ export class Board {
         const col = Math.floor((x + gap / 2) / gap);
         return [row, col];
     }
-    
+
 
     drawHover(ctx: CanvasRenderingContext2D, w: number, h: number) {
 
@@ -399,7 +417,7 @@ export class Board {
             return;
         }
         const gap = this.gapSize(w);
-        const color =  this.selfPlay ? this.currentPlayer : this.playerColor;
+        const color = this.selfPlay ? this.currentPlayer : this.playerColor;
 
         if (color == BLACK) {
             ctx.strokeStyle = "#0d0c09"
