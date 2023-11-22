@@ -11,6 +11,17 @@ interface BoardState {
     whiteScore: number;
 }
 
+
+
+interface History {
+
+    color : number,
+    position: number[],
+    captures: number[][]
+}
+
+
+
 function makeItemHolder() {
     let items = $state([]);
 
@@ -82,6 +93,9 @@ export class Board {
 
     selfPlay = false;
 
+    historyArr : History[];
+    historyIndex = 0;
+
     constructor(size: number, canvas: HTMLCanvasElement) {
         this.size = size;
         for (let i = 0; i < size + 2; i++) {
@@ -107,6 +121,17 @@ export class Board {
         canvas.addEventListener("mousemove", this.hoverEvent.bind(this))
         canvas.addEventListener("mouseup", this.clickEvent.bind(this))
     }
+
+    addToHistory(h:History){
+        this.historyArr.push(h);
+        this.historyIndex++;
+    }
+
+
+    rewind(index){
+        // reverses the gamestate after
+    }
+    
 
     test() {
         this.board[1][1] += 1;
@@ -238,6 +263,18 @@ export class Board {
         this.winningPlayer = this.currentPlayer;
         winningPlayer.set(this.currentPlayer);
     }
+    
+    
+    updateScore(color, change){
+        if(color ==BLACK){
+            this.blackScore += change;
+            blackScore.set(this.blackScore);
+        }
+        else if (color == WHITE){
+            this.whiteScore += change;
+            whiteScore.set(this.whiteScore)
+        }
+    }
 
 
 
@@ -337,6 +374,7 @@ export class Board {
         const col = Math.floor((x + gap / 2) / gap);
         return [row, col];
     }
+    
 
     drawHover(ctx: CanvasRenderingContext2D, w: number, h: number) {
 
