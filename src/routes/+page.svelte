@@ -216,8 +216,10 @@
     }
 
     canvas {
-        border: 2px solid var(--fg1);
+        border: 20px solid var(--board);
         /* padding: 0.5rem; */
+        font-family: 'FiraMono';
+        
     }
 
     .noclick {

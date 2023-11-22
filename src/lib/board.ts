@@ -292,6 +292,7 @@ export class Board {
         let h = this.canvas.height;
 
         this.drawBoard(ctx, w, h);
+        this.drawCoords(ctx, w, h)
         this.drawPieces(ctx, w, h,)
         this.drawHover(ctx, w, h)
         this.rerender = false;
@@ -301,6 +302,22 @@ export class Board {
 
     gapSize(width: number) {
         return Math.round(width / (this.size + 1));
+    }
+
+    drawCoords(ctx : CanvasRenderingContext2D, w: number, h:number){
+        const gap = this.gapSize(w);
+        // ctx.font = "12px FiraMono";
+        ctx.font = "16pt sans-serif";
+        // console.log(ctx.font);
+        ctx.fillStyle = "#3c3836";
+
+        const metric = ctx.measureText("I");
+
+        // draw columns / letters
+        for (let i = 1; i < this.size + 1; i++){
+            ctx.fillText(String.fromCharCode(i + 64), i * gap - metric.width/2, gap);
+            ctx.fillText(String.fromCharCode(i + 64), i * gap - metric.width/2, h - gap) ;
+        }
     }
 
     drawBoard(ctx: CanvasRenderingContext2D, w: number, h: number) {
