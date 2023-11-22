@@ -107,7 +107,7 @@
     }
 
     $: {
-        if ($lastPlay !== undefined) {
+        if ($lastPlay !== undefined && !board.selfPlay) {
             sendMessage(`#play ${$lastPlay[0]},${$lastPlay[1]}`);
         }
     }
@@ -149,8 +149,9 @@
 
     <Button 
     on:click={()=>{
-        gameStarted = true;
+        board.reset(BLACK);
         board.selfPlay = true;
+        gameStarted = true;
     }}
     disabled={gameStarted}>
         Self play
