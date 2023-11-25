@@ -3,7 +3,8 @@ export interface History {
 
     color: number,
     position: number[],
-    captures: number[][]
+    captures: number[][],
+    winner: number
 }
 
 

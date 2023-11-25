@@ -21,6 +21,7 @@
             ],
             color: 2,
             position: [1, 1],
+            winner: 0
         },
         {
             captures: [
@@ -31,7 +32,7 @@
                 [4, 8],
             ],
             color: 1,
-            position: [1, 1],
+            position: [1, 1], winner: 0
         },
         {
             captures: [
@@ -42,7 +43,7 @@
                 [4, 8],
             ],
             color: 1,
-            position: [1, 1],
+            position: [1, 1], winner: 0
         },
     ];
 </script>

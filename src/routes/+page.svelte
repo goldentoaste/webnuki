@@ -9,11 +9,13 @@
         whiteScore,
         winningPlayer,
         playerColor,
+        history,
     } from "$lib/board";
 
     import { BLACK, WHITE, EMPTY, WALL } from "$lib/boardLib";
     import Button from "$lib/components/Button.svelte";
     import MessageList from "$lib/components/MessageList.svelte";
+    import HistoryList from "$lib/components/historyList/HistoryList.svelte";
     import InputField from "$lib/components/inputField.svelte";
 
     import { onMount } from "svelte";
@@ -167,25 +169,6 @@
             width="700px"
             height="700px"
         />
-        {#if board}
-            <p>You are player: {colorToName($playerColor)}</p>
-            <p>Current player: {colorToName($currentPlayer)}</p>
-            <p>Black score: {$blackScore}</p>
-            <p>White score: {$whiteScore}</p>
-
-            {#if $winningPlayer != EMPTY}
-                {colorToName($winningPlayer)} has won the game!
-            {/if}
-            <!-- <p>
-                Board should be here:
-                {board.board}
-            </p> -->
-            <!-- <p>board's current player: {board.curPlayer}</p> -->
-
-            {#if isHost}
-                <Button on:click={newGame}>New Game</Button>
-            {/if}
-        {/if}
     </div>
 
     <div id="rightColumn" class="colGroup">
@@ -207,6 +190,35 @@
     </div>
 </div>
 
+{#if board}
+    <p>You are player: {colorToName($playerColor)}</p>
+    <p>Current player: {colorToName($currentPlayer)}</p>
+    <p>Black score: {$blackScore}</p>
+    <p>White score: {$whiteScore}</p>
+
+    {#if $winningPlayer != EMPTY}
+        {colorToName($winningPlayer)} has won the game!
+    {/if}
+    <!-- <p>
+    Board should be here:
+    {board.board}
+</p> -->
+    <!-- <p>board's current player: {board.curPlayer}</p> -->
+
+    {#if isHost}
+        <Button on:click={newGame}>New Game</Button>
+    {/if}
+{/if}
+
+{#if board}
+    <HistoryList
+        histories={$history}
+        on:indexChange={(e) => {
+            board.rewind(e.detail);
+        }}
+    ></HistoryList>
+{/if}
+
 <style>
     .rowGroup {
         display: flex;
@@ -215,7 +227,7 @@
         margin: 1rem;
     }
 
-    .colGroup{
+    .colGroup {
         display: flex;
         flex-direction: column;
         gap: 0.5rem;
@@ -223,22 +235,23 @@
     }
 
     canvas {
-        border: 20px solid var(--board);
         /* padding: 0.5rem; */
-        font-family: "FiraMono";
+       border: none;
+       margin: none;
+       padding: none;
+       border: 20px solid var(--board);
     }
 
     .noclick {
         pointer-events: none;
     }
 
-
     #canvasHolder {
         flex: 0 0 auto;
+      
     }
 
-    #rightColumn{
+    #rightColumn {
         flex: 1 1 auto;
     }
-
 </style>

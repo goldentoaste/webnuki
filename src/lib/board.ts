@@ -113,31 +113,42 @@ export class Board {
     addToHistory(h: History) {
         this.historyArr.push(h);
         this.historyIndex++;
+        history.set(this.historyArr)
     }
 
-    applyHistory(h:History){
+    applyHistory(h: History) {
         this.board[h.position[0]][h.position[1]] = h.color;
-        
+
         let count = 0;
-        for( let [row, col] of h.captures){
-            this.board[row][col] = EMPTY; 
+        for (let [row, col] of h.captures) {
+            this.board[row][col] = EMPTY;
             count++;
         }
         this.updateScore(h.color, count);
         this.currentPlayer = opponent(h.color);
+
+        this.updateWinner(h.winner)
     }
 
-    undoHistory(h:History){
+    undoHistory(h: History) {
         this.board[h.position[0]][h.position[1]] = EMPTY;
         const opColor = opponent(h.color);
-        
+
         let count = 0;
-        for( let [row, col] of h.captures){
-            this.board[row][col] = opColor; 
-           count++;
+        for (let [row, col] of h.captures) {
+            this.board[row][col] = opColor;
+            count++;
         }
         this.updateScore(h.color, -count);
         this.currentPlayer = h.color;
+
+        this.updateWinner(h.winner)
+    }
+
+    updateWinner(winner: number) {
+        if (winner == EMPTY) { return }
+        this.winningPlayer = winner;
+        winningPlayer.set(winner);
     }
 
 
@@ -145,26 +156,26 @@ export class Board {
         // reverses the gamestate after
 
         let diff = index - this.historyIndex;
-        
 
-        while( diff > 0 && this.historyIndex < this.historyArr.length){
+
+        while (diff > 0 && this.historyIndex < this.historyArr.length) {
             this.historyIndex++;
             this.applyHistory(this.historyArr[this.historyIndex]);
             diff--;
         }
 
 
-        while (diff < 0 && this.historyIndex >= 0){
-            this.historyIndex --;
+        while (diff < 0 && this.historyIndex >= 0) {
+            this.historyIndex--;
             this.undoHistory(this.historyArr[this.historyIndex]);
-            diff ++;
+            diff++;
         }
 
         history.set(this.historyArr);
     }
 
-    deleteFuture(index:number){
-        this.historyArr= this.historyArr.splice(index);
+    deleteFuture(index: number) {
+        this.historyArr = this.historyArr.splice(index);
         history.set(this.historyArr);
     }
 
@@ -254,7 +265,13 @@ export class Board {
         if (hasFive) {
 
             this.rerender()
-            console.log("WIN WIN WIN");
+            let h: History = {
+                captures: [],
+                color: this.currentPlayer,
+                position: [row, col],
+                winner: this.currentPlayer
+            }
+            this.addToHistory(h)
 
             return this.setWinner();
         }
@@ -262,6 +279,7 @@ export class Board {
 
         let opColor = opponent(this.currentPlayer);
         let captures = 0;
+        let capturePos: number[][] = [];
 
         for (let dir of dirSigned) {
             const [drow, dcol] = dir;
@@ -271,7 +289,6 @@ export class Board {
                 this.board[row + drow * 2][col + dcol * 2] === opColor &&
                 this.board[row + drow * 3][col + dcol * 3] === this.currentPlayer
             ) {
-                console.log("yikes!");
 
                 this.board[row + drow][col + dcol] = EMPTY;
                 this.board[row + drow * 2][col + dcol * 2] = EMPTY;
@@ -292,8 +309,24 @@ export class Board {
         if (this.blackScore >= 10 || this.whiteScore >= 10) {
 
             this.rerender()
+            let h: History = {
+                captures: capturePos,
+                color: this.currentPlayer,
+                position: [row, col],
+                winner: this.currentPlayer
+
+            }
+            this.addToHistory(h)
             return this.setWinner();
         }
+
+        let h: History = {
+            captures: capturePos,
+            color: this.currentPlayer,
+            position: [row, col],
+            winner: this.currentPlayer
+        }
+        this.addToHistory(h)
 
         this.currentPlayer = opColor;
         currentPlayer.set(opColor);
@@ -318,7 +351,7 @@ export class Board {
         }
     }
 
-    
+
 
 
     gapSize(width: number) {
@@ -345,8 +378,14 @@ export class Board {
         lastPlay.set([row, col])
     }
 
+    clamp(value: number, min: number, max: number) {
+        return Math.min(Math.max(value, min), max)
+    }
+
     hoverEvent(e: MouseEvent) {
-        const point = this.roundToNearestPoint(e.offsetX, e.offsetY);
+        const point = this.roundToNearestPoint(this.clamp(e.offsetX, 0, this.width), this.clamp(e.offsetY, 0, this.width));
+
+
         if (point[0] != this.hoverpos[0] || point[1] != this.hoverpos[1]) {
             // only trigger rerender if hover position has changed
             this.hoverpos = point;

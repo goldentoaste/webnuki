@@ -154,6 +154,7 @@ export class BoardRenderer {
 
     drawHover(ctx: CanvasRenderingContext2D, w: number, h: number) {
 
+   
         if (this.board[this.boardObj.hoverpos[0]][this.boardObj.hoverpos[1]] != EMPTY) {
             return;
         }

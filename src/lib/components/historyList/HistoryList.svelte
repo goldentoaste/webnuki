@@ -5,11 +5,11 @@
 
     export let histories: History[];
 
-    const dispatch = createEventDispatcher();
-    let currentIndex = 0;
+    const dispatch = createEventDispatcher<{indexChange:number}>();
+    let currentIndex :number = 0;
 
     $: {
-        dispatch("indexChange", { index: currentIndex });
+        dispatch("indexChange",  currentIndex );
     }
 </script>
 <p>Current indfex is: {currentIndex}</p>
@@ -37,7 +37,7 @@
 
         flex: 1 1 auto;
 
-        width: fit-content;
+        width: 350px;
     }
 
 
