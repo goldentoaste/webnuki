@@ -15,17 +15,19 @@ export const EMPTY = 0;
 
 export function col2Str(col: number, size: number = 0) {
 
-    return String.fromCharCode(col + 96);
+    return String.fromCharCode(col + 64);
 }
 
 export function colFStr(col: string, size: number = 0) {
     // size optional
 
-    return col.charCodeAt(0) - 96;
+    return col.charCodeAt(0) - 64;
 }
 
 
 export function row2Str(row: number, size: number) {
+
+    
     return (size - row).toString();
 }
 

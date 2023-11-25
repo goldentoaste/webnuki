@@ -159,7 +159,7 @@
 
 <h2>Board</h2>
 <div class="rowGroup">
-    <div>
+    <div id="canvasHolder">
         <canvas
             id="nukiCanvas"
             bind:this={canvas}
@@ -188,7 +188,7 @@
         {/if}
     </div>
 
-    <div>
+    <div id="rightColumn" class="colGroup">
         <MessageList data={messages} />
         <div class="rowGroup">
             <InputField
@@ -215,6 +215,13 @@
         margin: 1rem;
     }
 
+    .colGroup{
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        /* margin: 1rem; */
+    }
+
     canvas {
         border: 20px solid var(--board);
         /* padding: 0.5rem; */
@@ -224,4 +231,14 @@
     .noclick {
         pointer-events: none;
     }
+
+
+    #canvasHolder {
+        flex: 0 0 auto;
+    }
+
+    #rightColumn{
+        flex: 1 1 auto;
+    }
+
 </style>

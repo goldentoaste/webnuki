@@ -26,6 +26,7 @@ export const whiteScore = writable(0);
 export const currentPlayer = writable(BLACK);
 export const lastPlay = writable<number[] | undefined>(undefined);
 export const playerColor = writable(BLACK)
+export const boardSize = writable(9);
 
 const dirs = [
     [1, 1],
@@ -83,6 +84,7 @@ export class Board {
 
     constructor(size: number, canvas: HTMLCanvasElement) {
         this.size = size;
+        boardSize.set(size);
         for (let i = 0; i < size + 2; i++) {
             let row = Array(size + 2);
             row.fill(0);
@@ -96,8 +98,6 @@ export class Board {
             this.board[i][0] = WALL;
             this.board[i][size + 1] = WALL;
         }
-
-
 
         this.renderer = new BoardRenderer(size, canvas, this);
 
