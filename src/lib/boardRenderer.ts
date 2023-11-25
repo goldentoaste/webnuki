@@ -59,7 +59,10 @@ export class BoardRenderer {
     }
 
     gapSize(width: number) {
-        return Math.round(width / (this.size + 1));
+        // introduced too many floating point operations now
+        // definitely gotta render in layers
+        // TODO - render in layers
+        return width / (this.size + 1);
     }
 
     drawCoords(ctx: CanvasRenderingContext2D, w: number, h: number) {
@@ -78,8 +81,8 @@ export class BoardRenderer {
 
         for (let i = 1; i < this.size + 1; i++) {
             const num = this.size - i + 1;
-            ctx.fillText((num) + "", halfGap - this.fontMetric.width * 0.7, i * gap + 7);
-            ctx.fillText((num) + "", w - halfGap + this.fontMetric.width * 0.7, i * gap + 7);
+            ctx.fillText((num) + "", halfGap - this.fontMetric.width * 0.5, i * gap + 7);
+            ctx.fillText((num) + "", w - halfGap + this.fontMetric.width * 0.5, i * gap + 7);
         }
     }
 
@@ -98,8 +101,8 @@ export class BoardRenderer {
         for (let i = 1; i < this.size + 1; i++) {
 
             ctx.beginPath()
-            ctx.moveTo(i * gap, gap);
-            ctx.lineTo(i * gap, h - gap + 4);
+            ctx.moveTo(i * gap, gap - 1);
+            ctx.lineTo(i * gap, h - gap + 1);
             ctx.stroke();
             ctx.closePath()
         }
@@ -108,7 +111,7 @@ export class BoardRenderer {
         for (let i = 1; i < this.size + 1; i++) {
             ctx.beginPath()
             ctx.moveTo(gap - 1, i * gap);
-            ctx.lineTo(w - gap + 5, i * gap);
+            ctx.lineTo(w - gap, i * gap);
             ctx.stroke();
             ctx.closePath()
         }
