@@ -1,35 +1,45 @@
 
+export interface History {
 
-
-
-export function col2Str(col : number, size : number = 0){
-    
-    return String.fromCharCode(col + 96); 
+    color: number,
+    position: number[],
+    captures: number[][]
 }
 
-export function colFStr(col : string, size : number = 0){
+
+export const WALL = -1;
+export const BLACK = 1;
+export const WHITE = 2;
+export const EMPTY = 0;
+
+
+export function col2Str(col: number, size: number = 0) {
+
+    return String.fromCharCode(col + 96);
+}
+
+export function colFStr(col: string, size: number = 0) {
     // size optional
-    
+
     return col.charCodeAt(0) - 96;
 }
 
 
-export function row2Str(row : number, size : number){
-    return (size - row) .toString();
+export function row2Str(row: number, size: number) {
+    return (size - row).toString();
 }
 
-export function rowFStr(row : string, size :number)
-{
-    return  size - parseInt(row);
+export function rowFStr(row: string, size: number) {
+    return size - parseInt(row);
 }
 
 
-export function coord2Str(row : number, col:number, size: number){
+export function coord2Str(row: number, col: number, size: number) {
     return col2Str(col, size) + row2Str(row, size);
 }
 
 
-export function coordFStr(input:string, size : number){
+export function coordFStr(input: string, size: number) {
     // assume values less than 26
 
     return [

@@ -1,10 +1,6 @@
 <script lang="ts">
     import {
         Board,
-        BLACK,
-        EMPTY,
-        WALL,
-        WHITE,
         blackScore,
         colorToName,
         currentPlayer,
@@ -14,10 +10,12 @@
         winningPlayer,
         playerColor,
     } from "$lib/board";
+
+    import { BLACK, WHITE, EMPTY, WALL } from "$lib/boardLib";
     import Button from "$lib/components/Button.svelte";
     import MessageList from "$lib/components/MessageList.svelte";
     import InputField from "$lib/components/inputField.svelte";
-   
+
     import { onMount } from "svelte";
 
     //  peer connection garbage.
@@ -25,7 +23,7 @@
         onOpen: any,
         onMessage: Function,
         roomName: string,
-        isHost: boolean
+        isHost: boolean,
     ) => (msg: string) => void;
     onMount(async () => {
         const { makeConnection } = await import("$lib/connection");
@@ -81,7 +79,7 @@
     let canvas: HTMLCanvasElement;
     onMount(() => {
         // ninuki board state
-        board = new Board(15, canvas);
+        board = new Board(7, canvas);
     });
 
     /*
@@ -147,13 +145,14 @@
         disabled={gameStarted || isHost}>Connect to room</Button
     >
 
-    <Button 
-    on:click={()=>{
-        board.reset(BLACK);
-        board.selfPlay = true;
-        gameStarted = true;
-    }}
-    disabled={gameStarted}>
+    <Button
+        on:click={() => {
+            board.reset(BLACK);
+            board.selfPlay = true;
+            gameStarted = true;
+        }}
+        disabled={gameStarted}
+    >
         Self play
     </Button>
 </div>
@@ -219,8 +218,7 @@
     canvas {
         border: 20px solid var(--board);
         /* padding: 0.5rem; */
-        font-family: 'FiraMono';
-        
+        font-family: "FiraMono";
     }
 
     .noclick {

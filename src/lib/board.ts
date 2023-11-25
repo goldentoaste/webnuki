@@ -1,7 +1,10 @@
 
-// @ts-nocheck
-
 import { writable } from "svelte/store";
+import type { History } from "./boardLib"
+import { WALL, BLACK, WHITE, EMPTY } from "./boardLib";
+import { BoardRenderer } from "./boardRenderer";
+import { render } from "svelte/server";
+
 
 interface BoardState {
     board: number[][];
@@ -13,37 +16,15 @@ interface BoardState {
 
 
 
-interface History {
-
-    color: number,
-    position: number[],
-    captures: number[][]
-}
 
 
-
-function makeItemHolder() {
-    let items = $state([]);
-
-    return {
-        get items() { return items; },
-        addItems(item: any) {
-            items.push(item);
-        }
-    }
-}
-
-export const WALL = -1;
-export const BLACK = 1;
-export const WHITE = 2;
-export const EMPTY = 0;
 
 // update this when a player wins
 export const winningPlayer = writable(EMPTY);
 export const blackScore = writable(0);
 export const whiteScore = writable(0);
 export const currentPlayer = writable(BLACK);
-export const lastPlay = writable(undefined);
+export const lastPlay = writable<number[] | undefined>(undefined);
 export const playerColor = writable(BLACK)
 
 const dirs = [
@@ -88,16 +69,17 @@ export class Board {
     blackScore = 0;
     whiteScore = 0;
 
-    canvas: HTMLCanvasElement;
-    rerender = false;
-
     selfPlay = false;
 
-    historyArr: History[];
+    historyArr: History[] = [];
     historyIndex = 0;
 
-    letterMetrics: TextMetrics[] = [];
-    numberMetrics: TextMetrics[] = [];
+
+    hoverpos = [0, 0]
+    lastMove = [-1, -1]
+
+    renderer: BoardRenderer;
+    width = 0;
 
     constructor(size: number, canvas: HTMLCanvasElement) {
         this.size = size;
@@ -116,22 +98,16 @@ export class Board {
         }
 
 
-        this.canvas = canvas;
-        this.rerender = true;
 
-        // delayed event scheduling
-        window.requestAnimationFrame(this.paint.bind(this));
+        this.renderer = new BoardRenderer(size, canvas, this);
+
         canvas.addEventListener("mousemove", this.hoverEvent.bind(this))
         canvas.addEventListener("mouseup", this.clickEvent.bind(this))
 
+        this.width = this.renderer.canvas.width;
 
-        const ctx = canvas.getContext("2d")
-        ctx.font = "14pt sans-serif";
         // init metrics
-        for (let i = 0; i < size; i++) {
-            this.letterMetrics.push(ctx?.measureText(String.fromCharCode(i + 65)));
-            this.numberMetrics.push(ctx?.measureText((i + 1) + ""));
-        }
+
     }
 
     addToHistory(h: History) {
@@ -140,7 +116,7 @@ export class Board {
     }
 
 
-    rewind(index) {
+    rewind(index: number) {
         // reverses the gamestate after
     }
 
@@ -150,7 +126,7 @@ export class Board {
         this.board = this.board;
     }
 
-    saveState(): () => BoardState {
+    saveState(): BoardState {
         return {
             board: this.board,
             currentPlayer: this.currentPlayer,
@@ -192,12 +168,15 @@ export class Board {
                 this.board[r][c] = EMPTY;
             }
         }
-
-        this.rerender = true;
+        this.rerender()
 
     }
 
-    lastMove = [-1, -1]
+    rerender() {
+        this.renderer.rerender = true;
+    }
+
+
     playMove(row: number, col: number) {
         this.board[row][col] = this.currentPlayer;
         this.lastMove = [row, col]
@@ -225,7 +204,8 @@ export class Board {
         }
 
         if (hasFive) {
-            this.rerender = true;
+
+            this.rerender()
             console.log("WIN WIN WIN");
 
             return this.setWinner();
@@ -262,13 +242,15 @@ export class Board {
         }
 
         if (this.blackScore >= 10 || this.whiteScore >= 10) {
-            this.rerender = true;
+
+            this.rerender()
             return this.setWinner();
         }
 
         this.currentPlayer = opColor;
         currentPlayer.set(opColor);
-        this.rerender = true;
+
+        this.rerender()
     }
 
     setWinner() {
@@ -277,7 +259,7 @@ export class Board {
     }
 
 
-    updateScore(color, change) {
+    updateScore(color: number, change: number) {
         if (color == BLACK) {
             this.blackScore += change;
             blackScore.set(this.blackScore);
@@ -289,161 +271,17 @@ export class Board {
     }
 
 
-
-
-    // canvas rendering section
-    paint() {
-        if (!(this.rerender)) {
-            requestAnimationFrame(this.paint.bind(this))
-            return;
-        }
-
-        let ctx: CanvasRenderingContext2D = this.canvas.getContext("2d", {
-        });
-        let w = this.canvas.width;
-        let h = this.canvas.height;
-
-        this.drawBoard(ctx, w, h);
-        this.drawCoords(ctx, w, h)
-        this.drawPieces(ctx, w, h,)
-        this.drawHover(ctx, w, h)
-        this.rerender = false;
-
-        requestAnimationFrame(this.paint.bind(this));
-    }
-
     gapSize(width: number) {
         return Math.round(width / (this.size + 1));
     }
 
-    drawCoords(ctx: CanvasRenderingContext2D, w: number, h: number) {
-        const gap = this.gapSize(w);
-        const halfGap = gap / 2;
-        // ctx.font = "12px FiraMono";
-        ctx.font = "14pt sans-serif";
-        // console.log(ctx.font);
-        ctx.fillStyle = "#3c3836";
-        for (let i = 1; i < this.size + 1; i++) {
-            const metric = this.letterMetrics[i - 1];
-            ctx.fillText(String.fromCharCode(i + 64), i * gap - metric.width / 2, gap / 2 - metric.actualBoundingBoxDescent);
-            ctx.fillText(String.fromCharCode(i + 64), i * gap - metric.width / 2, h);
-        }
-
-        for (let i = 1; i < this.size + 1; i++) {
-
-            const num = this.size - i + 1;
-            const metric = this.numberMetrics[num - 1];
-            ctx.fillText((num) + "", halfGap - metric.width, i * gap + 7);
-            ctx.fillText((num) + "", w - halfGap, i * gap + 7);
-        }
-    }
-
-    drawBoard(ctx: CanvasRenderingContext2D, w: number, h: number) {
-        // TODO cache board to an image buffer
-        let gap = this.gapSize(w)
-
-        // wood color board
-        ctx.fillStyle = '#fcecbb'
-        ctx.fillRect(0, 0, w, h);
-
-        ctx.strokeStyle = "#000000";
-        ctx.lineWidth = 1
-
-        //draw vert lines
-        for (let i = 1; i < this.size + 1; i++) {
-
-            ctx.beginPath()
-            ctx.moveTo(i * gap, gap);
-            ctx.lineTo(i * gap, h - gap + 4);
-            ctx.stroke();
-            ctx.closePath()
-        }
-
-        //draw hori lines
-        for (let i = 1; i < this.size + 1; i++) {
-            ctx.beginPath()
-            ctx.moveTo(gap - 1, i * gap);
-            ctx.lineTo(w - gap + 5, i * gap);
-            ctx.stroke();
-            ctx.closePath()
-        }
-    }
-
-    drawPieces(ctx: CanvasRenderingContext2D, w: number, h: number) {
-        const gap = this.gapSize(w);
-        const pieceRatio = 0.8;
-        const pieceRadius = Math.round(pieceRatio * gap / 2);
-
-        ctx.lineWidth = 2
-        for (let r = 1; r < this.size + 1; r++) {
-            for (let c = 1; c < this.size + 1; c++) {
-                const color = this.board[r][c];
-                if (color == EMPTY) { continue; }
-                if (color == BLACK) {
-                    ctx.strokeStyle = "#0d0c09"
-                    ctx.fillStyle = "#2b2820"
-                }
-                else {
-                    ctx.strokeStyle = "#f5f5f5"
-                    ctx.fillStyle = "#dedede"
-                }
-
-                if (r == this.lastMove[0] && c == this.lastMove[1]) {
-                    ctx.strokeStyle = "#fb5a48de"
-                }
-
-                ctx.beginPath()
-                ctx.ellipse(c * gap, r * gap, pieceRadius, pieceRadius, 0, 0, Math.PI * 2, false);
-                ctx.fill()
-                ctx.stroke();
-                ctx.closePath()
-            }
-        }
-    }
-
-    hoverpos = [0, 0]
-
-    roundToNearestPoint(x, y) {
-        const gap = this.gapSize(this.canvas.width);
+    roundToNearestPoint(x: number, y: number) {
+        const gap = this.gapSize(this.width);
         const row = Math.floor((y + gap / 2) / gap);
         const col = Math.floor((x + gap / 2) / gap);
         return [row, col];
     }
 
-
-    drawHover(ctx: CanvasRenderingContext2D, w: number, h: number) {
-
-        if (this.board[this.hoverpos[0]][this.hoverpos[1]] != EMPTY) {
-            return;
-        }
-        const gap = this.gapSize(w);
-        const color = this.selfPlay ? this.currentPlayer : this.playerColor;
-
-        if (color == BLACK) {
-            ctx.strokeStyle = "#0d0c09"
-            ctx.fillStyle = "#2b282088"
-        }
-        else {
-            ctx.strokeStyle = "#f5f5f5"
-            ctx.fillStyle = "#dedede88" // slightly transparent
-        }
-        ctx.beginPath()
-        ctx.ellipse(this.hoverpos[1] * gap, this.hoverpos[0] * gap, 0.4 * gap, 0.4 * gap, 0, 0, 2 * Math.PI, false);
-        ctx.stroke()
-        ctx.fill();
-        ctx.closePath()
-
-    }
-
-
-    hoverEvent(e: MouseEvent) {
-        const point = this.roundToNearestPoint(e.offsetX, e.offsetY);
-        if (point[0] != this.hoverpos[0] || point[1] != this.hoverpos[1]) {
-            // only trigger rerender if hover position has changed
-            this.hoverpos = point;
-            this.rerender = true;
-        }
-    }
 
     clickEvent(e: MouseEvent) {
         const [row, col] = this.roundToNearestPoint(e.offsetX, e.offsetY);
@@ -456,5 +294,17 @@ export class Board {
         this.playMove(row, col);
         lastPlay.set([row, col])
     }
+
+    hoverEvent(e: MouseEvent) {
+        const point = this.roundToNearestPoint(e.offsetX, e.offsetY);
+        if (point[0] != this.hoverpos[0] || point[1] != this.hoverpos[1]) {
+            // only trigger rerender if hover position has changed
+            this.hoverpos = point;
+
+            this.rerender()
+
+        }
+    }
+
 
 }
