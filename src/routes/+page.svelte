@@ -79,7 +79,7 @@
     let canvas: HTMLCanvasElement;
     onMount(() => {
         // ninuki board state
-        board = new Board(7, canvas);
+        board = new Board(19, canvas);
     });
 
     /*
