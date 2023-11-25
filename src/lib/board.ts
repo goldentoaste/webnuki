@@ -27,6 +27,7 @@ export const currentPlayer = writable(BLACK);
 export const lastPlay = writable<number[] | undefined>(undefined);
 export const playerColor = writable(BLACK)
 export const boardSize = writable(9);
+export const history = writable<History[]>([]);
 
 const dirs = [
     [1, 1],
@@ -106,7 +107,6 @@ export class Board {
 
         this.width = this.renderer.canvas.width;
 
-        // init metrics
 
     }
 
@@ -115,9 +115,57 @@ export class Board {
         this.historyIndex++;
     }
 
+    applyHistory(h:History){
+        this.board[h.position[0]][h.position[1]] = h.color;
+        
+        let count = 0;
+        for( let [row, col] of h.captures){
+            this.board[row][col] = EMPTY; 
+            count++;
+        }
+        this.updateScore(h.color, count);
+        this.currentPlayer = opponent(h.color);
+    }
+
+    undoHistory(h:History){
+        this.board[h.position[0]][h.position[1]] = EMPTY;
+        const opColor = opponent(h.color);
+        
+        let count = 0;
+        for( let [row, col] of h.captures){
+            this.board[row][col] = opColor; 
+           count++;
+        }
+        this.updateScore(h.color, -count);
+        this.currentPlayer = h.color;
+    }
+
 
     rewind(index: number) {
         // reverses the gamestate after
+
+        let diff = index - this.historyIndex;
+        
+
+        while( diff > 0 && this.historyIndex < this.historyArr.length){
+            this.historyIndex++;
+            this.applyHistory(this.historyArr[this.historyIndex]);
+            diff--;
+        }
+
+
+        while (diff < 0 && this.historyIndex >= 0){
+            this.historyIndex --;
+            this.undoHistory(this.historyArr[this.historyIndex]);
+            diff ++;
+        }
+
+        history.set(this.historyArr);
+    }
+
+    deleteFuture(index:number){
+        this.historyArr= this.historyArr.splice(index);
+        history.set(this.historyArr);
     }
 
 
@@ -269,6 +317,8 @@ export class Board {
             whiteScore.set(this.whiteScore)
         }
     }
+
+    
 
 
     gapSize(width: number) {

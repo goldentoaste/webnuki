@@ -22,6 +22,7 @@
     <div class="horiLayout">
         <div>
             <div class="horiLayout">
+                <span>{index + 1}.</span>
                 <div
                     id="circle"
                     class:black={history.color == BLACK}
@@ -66,7 +67,7 @@
         display: flex;
         flex-direction: row;
 
-        gap: 1rem;
+        gap: 0.75rem;
         margin: 0.25rem;
         align-items: center;
     }
@@ -88,10 +89,20 @@
         background-color: var(--fg);
     }
 
-    #itemContainer {
+
+    #itemContainer:not(.highLight) {
+        border-top: 2px solid var(--bg3);
+    }
+
+    #itemContainer:first-child {
+        border: none;
+    }
+
+    #itemContainer{
         padding: 0.5rem;
         width: fit-content;
     }
+
 
     .lowVis {
         color: var(--bg3);
