@@ -1,10 +1,12 @@
 <script lang="ts">
     import type { History } from "$lib/boardLib";
+
     import { createEventDispatcher } from "svelte";
     import HistoryItem from "./HistoryItem.svelte";
 
     export let histories: History[];
     export let currentIndex: number;
+   
 
     const dispatch = createEventDispatcher<{ indexChange: number }  >();
 
@@ -20,6 +22,7 @@
             {history}
             {index}
             highLight={index == currentIndex}
+
             on:click={() => {
                
 
@@ -33,6 +36,8 @@
             }}
         />
     {/each}
+
+    <div id="spacer" style="min-height:400px"></div>
 </div>
 
 <style>

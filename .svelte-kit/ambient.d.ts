@@ -29,7 +29,6 @@ declare module '$env/static/private' {
 	export const ALLUSERSPROFILE: string;
 	export const ANDROID_SDK_ROOT: string;
 	export const APPDATA: string;
-	export const APPLICATION_INSIGHTS_NO_DIAGNOSTIC_CHANNEL: string;
 	export const CHROME_CRASHPAD_PIPE_NAME: string;
 	export const COLOR: string;
 	export const COLORTERM: string;
@@ -52,7 +51,6 @@ declare module '$env/static/private' {
 	export const JAVA_HOME: string;
 	export const LANG: string;
 	export const LOCALAPPDATA: string;
-	export const LOCAL_GIT_DIRECTORY: string;
 	export const LOGONSERVER: string;
 	export const NODE: string;
 	export const NODE_ENV: string;
@@ -148,7 +146,6 @@ declare module '$env/dynamic/private' {
 		ALLUSERSPROFILE: string;
 		ANDROID_SDK_ROOT: string;
 		APPDATA: string;
-		APPLICATION_INSIGHTS_NO_DIAGNOSTIC_CHANNEL: string;
 		CHROME_CRASHPAD_PIPE_NAME: string;
 		COLOR: string;
 		COLORTERM: string;
@@ -171,7 +168,6 @@ declare module '$env/dynamic/private' {
 		JAVA_HOME: string;
 		LANG: string;
 		LOCALAPPDATA: string;
-		LOCAL_GIT_DIRECTORY: string;
 		LOGONSERVER: string;
 		NODE: string;
 		NODE_ENV: string;

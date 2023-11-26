@@ -7,6 +7,7 @@
     export let history: History;
     export let index: number;
     export let highLight = true;
+    export let hideButton = false;
 
     let showButton = false;
 
