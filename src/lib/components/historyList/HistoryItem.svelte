@@ -3,7 +3,6 @@
     import { BLACK, EMPTY, WHITE, coord2Str } from "$lib/boardLib";
     import { boardSize } from "$lib/board";
     import Button from "../Button.svelte";
-    import { onMount } from "svelte";
 
     export let history: History;
     export let index: number;
@@ -11,9 +10,9 @@
 
     let showButton = false;
 
-    onMount(() => {
-        console.log(history, history.captures, history.captures.length);
-    });
+ 
+
+
 </script>
 
 <div
@@ -44,7 +43,7 @@
             </div>
             {#if history.winner != EMPTY}
                 <span>
-                    {history.winner == BLACK ? "Black" : "White"} wins by pente.</span
+                    {history.winner == BLACK ? "Black" : "White"} wins by {history.captures.length > 0? "10 captures" : "Pente"}.</span
                 >
             {:else if history.captures.length === 0}
                 <span class="lowVis">No capture</span>
@@ -64,7 +63,7 @@
                 >
             {/if}
         </div>
-        <div id="buttonWrapper" class:disabled={!showButton}>
+        <div id="buttonWrapper" class:disabled={!showButton || highLight}>
             <Button on:click disabled={!showButton}>Rewind</Button>
         </div>
     </div>

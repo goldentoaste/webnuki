@@ -131,7 +131,6 @@ export class Board {
         this.updateScore(h.color, count);
         this.currentPlayer = opponent(h.color);
 
-        this.updateWinner(h.winner)
     }
 
     undoHistory(h: History) {
@@ -146,11 +145,11 @@ export class Board {
         this.updateScore(h.color, -count);
         this.currentPlayer = h.color;
 
-        this.updateWinner(h.winner)
+        
     }
 
     updateWinner(winner: number) {
-        if (winner == EMPTY) { return }
+        if (winner == EMPTY && this.winningPlayer == EMPTY) { return }
         this.winningPlayer = winner;
         winningPlayer.set(winner);
     }
@@ -185,6 +184,9 @@ export class Board {
 
         history.set(this.historyArr);
         historyIndex.set(this.historyIndex)
+
+        // check if we need to undo or redo a player winning after applying history
+        this.updateWinner(this.historyArr[this.historyIndex].winner)
         this.rerender()
     }
 

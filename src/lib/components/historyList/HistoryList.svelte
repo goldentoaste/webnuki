@@ -39,7 +39,7 @@
 
         flex: 1 1 auto;
 
-        width: 350px;
+        width: 300px;
     }
 
 
