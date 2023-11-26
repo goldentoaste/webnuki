@@ -10,8 +10,14 @@
 
     let showButton = false;
 
- 
+    let root : HTMLElement;
 
+    $:{
+
+        if(highLight && root){
+            root.scrollIntoView({block: "nearest", inline: "nearest",behavior:"smooth"} )
+        }
+    }
 
 </script>
 
@@ -22,6 +28,7 @@
         showButton = true;
     }}
     on:mouseleave={() => (showButton = false)}
+    bind:this={root}
 >
     <div class="horiLayout" style="justify-content: space-between;">
         <div>

@@ -8,11 +8,13 @@
 
     const dispatch = createEventDispatcher<{ indexChange: number }  >();
 
+    let container : HTMLDivElement;
+
 
 
 </script>
 
-<div class="historyContainer">
+<div class="historyContainer" bind:this={container}>
     {#each histories as history, index}
         <HistoryItem
             {history}

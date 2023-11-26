@@ -183,7 +183,7 @@
     {/if}
 </div>
 
-<div class="rowGroup">
+<div class="rowGroup" style="height:800px">
     <div id="canvasHolder">
         <h2>Board</h2>
         <canvas
@@ -243,14 +243,7 @@
         width: fit-content;
     }
 
-    .colGroup {
-        display: flex;
-        flex-direction: column;
-        gap: 0.5rem;
-        flex: 1 1 auto;
-        width: fit-content;
-        /* margin: 1rem; */
-    }
+  
 
     canvas {
         /* padding: 0.5rem; */
@@ -266,6 +259,18 @@
 
     #canvasHolder {
         flex: 0 0 auto;
+
+    }
+
+    .colGroup {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+       
+        width: fit-content;
+    
+        flex: 1 1 auto;
+
     }
 
     #stats {
