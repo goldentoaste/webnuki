@@ -16,7 +16,7 @@
     $:{
 
         if(highLight && root){
-            root.scrollIntoView({block: "nearest", inline: "nearest",behavior:"smooth"} )
+            root.scrollIntoView({block: "center", inline: "nearest",behavior:"smooth"} )
         }
     }
 

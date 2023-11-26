@@ -389,7 +389,9 @@ export class Board {
 
     clickEvent(e: MouseEvent) {
         const [row, col] = this.roundToNearestPoint(e.offsetX, e.offsetY);
-
+        if(e.button !== 0){
+            return
+        }
         if ((this.currentPlayer != this.playerColor && !this.selfPlay) || this.board[row][col] != EMPTY || this.historyIndex != this.historyArr.length - 1) {
             return;
         }
@@ -403,7 +405,6 @@ export class Board {
 
     hoverEvent(e: MouseEvent) {
         const point = this.roundToNearestPoint(this.clamp(e.offsetX, 0, this.width), this.clamp(e.offsetY, 0, this.width));
-
 
         if (point[0] != this.hoverpos[0] || point[1] != this.hoverpos[1]) {
             // only trigger rerender if hover position has changed
