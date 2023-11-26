@@ -170,7 +170,6 @@ export class Board {
         while (diff > 0 && this.historyIndex < this.historyArr.length) {
             this.historyIndex++;
             this.applyHistory(this.historyArr[this.historyIndex]);
-           
             diff--;
         }
 
@@ -390,10 +389,8 @@ export class Board {
 
     clickEvent(e: MouseEvent) {
         const [row, col] = this.roundToNearestPoint(e.offsetX, e.offsetY);
-        // if ( this.board[row][col] != EMPTY ) {
-        //     return;
-        // }
-        if ((this.currentPlayer != this.playerColor && !this.selfPlay) || this.board[row][col] != EMPTY) {
+
+        if ((this.currentPlayer != this.playerColor && !this.selfPlay) || this.board[row][col] != EMPTY || this.historyIndex != this.historyArr.length - 1) {
             return;
         }
         this.playMove(row, col);

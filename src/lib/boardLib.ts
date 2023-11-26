@@ -29,11 +29,11 @@ export function colFStr(col: string, size: number = 0) {
 export function row2Str(row: number, size: number) {
 
     
-    return (size - row).toString();
+    return (size - row + 1).toString();
 }
 
 export function rowFStr(row: string, size: number) {
-    return size - parseInt(row);
+    return size - parseInt(row) + 1;
 }
 
 

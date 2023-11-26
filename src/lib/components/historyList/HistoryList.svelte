@@ -8,9 +8,6 @@
 
     const dispatch = createEventDispatcher<{ indexChange: number }  >();
 
-    $: {
-        dispatch("indexChange", currentIndex);
-    }
 
 
 </script>
@@ -29,6 +26,7 @@
                     dispatch("commit", index);
                 }else{
                     currentIndex = index;
+                    dispatch("indexChange", currentIndex);
                 }
             }}
         />

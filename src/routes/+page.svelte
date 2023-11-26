@@ -42,7 +42,7 @@
         "messages and plays will be here",
     ];
     let currentMessage = "";
-    let sendMessage: (msg: string) => void;
+    let sendMessage: (msg: string) => void = (msg: string) => {};
 
     let onOpen = () => {
         gameStarted = true;
@@ -60,14 +60,18 @@
             // other player just did reset, requesting us to reset
             const color = parseInt(blocks[1]);
             reset(color);
-        }
-
-        if (blocks[0] == "#play") {
+        } else if (blocks[0] == "#play") {
             // other just played a move, request us to play the same move to stay in sync
             const [row, col] = blocks[1]
                 .split(",")
                 .map((item) => parseInt(item));
             play(row, col);
+        } else if (blocks[0] == "#rewind") {
+            const index = parseInt(blocks[1]);
+            board.rewind(index);
+        } else if (blocks[0] == "#commit") {
+            const index = parseInt(blocks[1]);
+            board.deleteFuture(index);
         }
     };
 
@@ -112,6 +116,16 @@
         messages = messages;
         sendMessage(currentMessage);
         currentMessage = "";
+    }
+
+    function rewind(index: number) {
+        board.rewind(index);
+        sendMessage(`#rewind ${index}`);
+    }
+
+    function commit(index: number) {
+        board.deleteFuture(index);
+        sendMessage(`#commit ${index}`);
     }
 
     $: {
@@ -197,11 +211,11 @@
             <HistoryList
                 histories={$history}
                 on:indexChange={(e) => {
-                    board.rewind(e.detail);
+                    rewind(e.detail);
                 }}
                 currentIndex={$historyIndex}
-                on:commit={(e)=>{
-                    board.deleteFuture(e.detail)
+                on:commit={(e) => {
+                    commit(e.detail);
                 }}
             ></HistoryList>
         {/if}
