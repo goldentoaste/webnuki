@@ -4,19 +4,16 @@
     import HistoryItem from "./HistoryItem.svelte";
 
     export let histories: History[];
-    export let currentIndex :number ;
+    export let currentIndex: number;
 
-    const dispatch = createEventDispatcher<{indexChange:number}>();
+    const dispatch = createEventDispatcher<{ indexChange: number }>();
 
     $: {
-        dispatch("indexChange",  currentIndex );
+        dispatch("indexChange", currentIndex);
     }
-
-
 </script>
-<p>Current indfex is: {currentIndex}</p>
-<div class="historyContainer">
 
+<div class="historyContainer">
     {#each histories as history, index}
         <HistoryItem
             {history}
@@ -41,6 +38,4 @@
 
         width: 300px;
     }
-
-
 </style>

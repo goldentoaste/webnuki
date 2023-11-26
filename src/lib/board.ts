@@ -20,7 +20,7 @@ interface BoardState {
 
 
 // update this when a player wins
-export const winningPlayer = writable(EMPTY);
+export const winningPlayer = writable(WALL);
 export const blackScore = writable(0);
 export const whiteScore = writable(0);
 export const currentPlayer = writable(BLACK);

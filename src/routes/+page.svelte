@@ -10,7 +10,7 @@
         winningPlayer,
         playerColor,
         history,
-        historyIndex
+        historyIndex,
     } from "$lib/board";
 
     import { BLACK, WHITE, EMPTY, WALL } from "$lib/boardLib";
@@ -107,6 +107,13 @@
         board.playMove(row, col);
     }
 
+    function sendTextMessage() {
+        messages.unshift(currentMessage);
+        messages = messages;
+        sendMessage(currentMessage);
+        currentMessage = "";
+    }
+
     $: {
         if ($lastPlay !== undefined && !board.selfPlay) {
             sendMessage(`#play ${$lastPlay[0]},${$lastPlay[1]}`);
@@ -114,9 +121,7 @@
     }
 
     $: {
-        if ($winningPlayer != EMPTY) {
-            gameStarted = false;
-        }
+        gameStarted = $winningPlayer == EMPTY;
     }
 </script>
 
@@ -158,11 +163,17 @@
     >
         Self play
     </Button>
+
+
+    
+    {#if gameStarted}
+    <Button on:click={newGame}>New Game</Button>
+{/if}
 </div>
 
-<h2>Board</h2>
 <div class="rowGroup">
     <div id="canvasHolder">
+        <h2>Board</h2>
         <canvas
             id="nukiCanvas"
             bind:this={canvas}
@@ -171,54 +182,44 @@
             height="700px"
         />
     </div>
+    <div class="colGroup">
+        <div id="stats">
+            {#if board}
+            <span>You are player: {colorToName($playerColor)}</span>
+            <span>Current player: {colorToName($currentPlayer)}</span>
+            <span>Black score: {$blackScore}</span>
+            <span>White score: {$whiteScore}</span>
 
-    <div id="rightColumn" class="colGroup">
+            {#if $winningPlayer == BLACK || $winningPlayer == WHITE}
+                {colorToName($winningPlayer)} has won the game!
+            {/if}
+
+        {/if}
+        </div>
+        {#if board}
+            <HistoryList
+                histories={$history}
+                on:indexChange={(e) => {
+                    board.rewind(e.detail);
+                }}
+                currentIndex={$historyIndex}
+            ></HistoryList>
+        {/if}
+    </div>
+
+    <div class="colGroup">
+       
         <MessageList data={messages} />
         <div class="rowGroup">
             <InputField
                 placeholder="message to send here"
                 bind:value={currentMessage}
+                on:submit={sendTextMessage}
             />
-            <Button
-                on:click={() => {
-                    messages.unshift(currentMessage);
-                    messages = messages;
-                    sendMessage(currentMessage);
-                    currentMessage = "";
-                }}>Send</Button
-            >
+            <Button on:click={sendTextMessage}>Send</Button>
         </div>
     </div>
-    {#if board}
-        <HistoryList
-            histories={$history}
-            on:indexChange={(e) => {
-                board.rewind(e.detail);
-            }}
-            currentIndex={$historyIndex}
-        ></HistoryList>
-    {/if}
 </div>
-
-{#if board}
-    <p>You are player: {colorToName($playerColor)}</p>
-    <p>Current player: {colorToName($currentPlayer)}</p>
-    <p>Black score: {$blackScore}</p>
-    <p>White score: {$whiteScore}</p>
-
-    {#if $winningPlayer != EMPTY}
-        {colorToName($winningPlayer)} has won the game!
-    {/if}
-    <!-- <p>
-    Board should be here:
-    {board.board}
-</p> -->
-    <!-- <p>board's current player: {board.curPlayer}</p> -->
-
-    {#if gameStarted}
-        <Button on:click={newGame}>New Game</Button>
-    {/if}
-{/if}
 
 <style>
     .rowGroup {
@@ -226,12 +227,15 @@
         flex-direction: row;
         gap: 0.5rem;
         margin: 1rem;
+        width: fit-content;
     }
 
     .colGroup {
         display: flex;
         flex-direction: column;
         gap: 0.5rem;
+        flex: 1 1 auto;
+        width: fit-content;
         /* margin: 1rem; */
     }
 
@@ -251,7 +255,10 @@
         flex: 0 0 auto;
     }
 
-    #rightColumn {
-        flex: 1 1 auto;
+
+    #stats{
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
     }
 </style>

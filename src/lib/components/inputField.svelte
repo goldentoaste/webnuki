@@ -42,6 +42,7 @@
         {pattern}
         on:input={checkInput}
         {value}
+        on:submit
     />
 
     {#if showMsg}
