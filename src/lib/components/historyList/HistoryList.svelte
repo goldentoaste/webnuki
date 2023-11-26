@@ -4,13 +4,15 @@
     import HistoryItem from "./HistoryItem.svelte";
 
     export let histories: History[];
+    export let currentIndex :number ;
 
     const dispatch = createEventDispatcher<{indexChange:number}>();
-    let currentIndex :number = 0;
 
     $: {
         dispatch("indexChange",  currentIndex );
     }
+
+
 </script>
 <p>Current indfex is: {currentIndex}</p>
 <div class="historyContainer">
@@ -19,7 +21,7 @@
         <HistoryItem
             {history}
             {index}
-            highLight={index == histories.length - 1}
+            highLight={index == currentIndex}
             on:click={() => {
                 currentIndex = index;
             }}

@@ -28,6 +28,7 @@ export const lastPlay = writable<number[] | undefined>(undefined);
 export const playerColor = writable(BLACK)
 export const boardSize = writable(9);
 export const history = writable<History[]>([]);
+export const historyIndex = writable<number>(-1);
 
 const dirs = [
     [1, 1],
@@ -74,11 +75,11 @@ export class Board {
     selfPlay = false;
 
     historyArr: History[] = [];
-    historyIndex = 0;
+    historyIndex = -1;
 
 
     hoverpos = [0, 0]
-    lastMove = [-1, -1]
+
 
     renderer: BoardRenderer;
     width = 0;
@@ -113,10 +114,13 @@ export class Board {
     addToHistory(h: History) {
         this.historyArr.push(h);
         this.historyIndex++;
+        historyIndex.set(this.historyIndex)
         history.set(this.historyArr)
     }
 
     applyHistory(h: History) {
+        console.log("applying", h);
+        
         this.board[h.position[0]][h.position[1]] = h.color;
 
         let count = 0;
@@ -154,35 +158,46 @@ export class Board {
 
     rewind(index: number) {
         // reverses the gamestate after
-
+        
+        if (this.historyIndex == -1 || index < 0 || index >= this.historyArr.length){
+            return;
+        }
+        
         let diff = index - this.historyIndex;
 
+        console.log(diff);
+        
 
         while (diff > 0 && this.historyIndex < this.historyArr.length) {
             this.historyIndex++;
             this.applyHistory(this.historyArr[this.historyIndex]);
+           
             diff--;
         }
 
 
         while (diff < 0 && this.historyIndex >= 0) {
-            this.historyIndex--;
+        
             this.undoHistory(this.historyArr[this.historyIndex]);
+            this.historyIndex--;
             diff++;
         }
 
         history.set(this.historyArr);
+        historyIndex.set(this.historyIndex)
+        this.rerender()
     }
 
     deleteFuture(index: number) {
-        this.historyArr = this.historyArr.splice(index);
+        if (index == -1){
+            this.historyArr = []
+        }
+        else{
+
+            this.historyArr = this.historyArr.splice(index, this.historyArr.length - index);
+        }
+        this.historyIndex = index;
         history.set(this.historyArr);
-    }
-
-
-    test() {
-        this.board[1][1] += 1;
-        this.board = this.board;
     }
 
     saveState(): BoardState {
@@ -227,6 +242,9 @@ export class Board {
                 this.board[r][c] = EMPTY;
             }
         }
+
+
+        this.deleteFuture(-1)
         this.rerender()
 
     }
@@ -238,7 +256,6 @@ export class Board {
 
     playMove(row: number, col: number) {
         this.board[row][col] = this.currentPlayer;
-        this.lastMove = [row, col]
         // check for five in a row
         let hasFive = false;
         for (let dir of dirs) {
@@ -294,6 +311,8 @@ export class Board {
                 this.board[row + drow * 2][col + dcol * 2] = EMPTY;
                 captures += 2;
 
+                capturePos.push([row + drow, col + dcol]);
+                capturePos.push([row + drow * 2, col + dcol * 2]);
             }
         }
         if (this.currentPlayer === BLACK) {
@@ -324,7 +343,7 @@ export class Board {
             captures: capturePos,
             color: this.currentPlayer,
             position: [row, col],
-            winner: this.currentPlayer
+            winner: EMPTY
         }
         this.addToHistory(h)
 

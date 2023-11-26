@@ -1,14 +1,19 @@
 <script lang="ts">
     import type { History } from "$lib/boardLib";
-    import { BLACK, WHITE, coord2Str } from "$lib/boardLib";
+    import { BLACK, EMPTY, WHITE, coord2Str } from "$lib/boardLib";
     import { boardSize } from "$lib/board";
     import Button from "../Button.svelte";
+    import { onMount } from "svelte";
 
     export let history: History;
     export let index: number;
     export let highLight = true;
 
     let showButton = false;
+
+    onMount(() => {
+        console.log(history, history.captures, history.captures.length);
+    });
 </script>
 
 <div
@@ -19,7 +24,7 @@
     }}
     on:mouseleave={() => (showButton = false)}
 >
-    <div class="horiLayout">
+    <div class="horiLayout" style="justify-content: space-between;">
         <div>
             <div class="horiLayout">
                 <span>{index + 1}.</span>
@@ -37,20 +42,23 @@
                     )}</span
                 >
             </div>
-
-            {#if history.captures.length <= 2}
+            {#if history.winner != EMPTY}
+                <span>
+                    {history.winner == BLACK ? "Black" : "White"} wins by pente.</span
+                >
+            {:else if history.captures.length === 0}
+                <span class="lowVis">No capture</span>
+            {:else if history.captures.length <= 2}
                 <span id="captures"
                     >Captures: {history.captures
                         .map((item) => coord2Str(item[0], item[1], $boardSize))
                         .join(" ")}</span
                 >
-            {:else if history.captures.length == 0}
-                <span class="lowVis">No capture</span>
             {:else}
                 <span>Captures:</span>
-                <br>
-                <span
-                    > {history.captures
+                <br />
+                <span>
+                    {history.captures
                         .map((item) => coord2Str(item[0], item[1], $boardSize))
                         .join(" ")}</span
                 >
@@ -67,7 +75,7 @@
         display: flex;
         flex-direction: row;
 
-        gap: 0.75rem;
+        gap: 0.5rem;
         margin: 0.25rem;
         align-items: center;
     }
@@ -89,20 +97,19 @@
         background-color: var(--fg);
     }
 
-
     #itemContainer:not(.highLight) {
         border-top: 2px solid var(--bg3);
     }
 
-    #itemContainer:first-child {
+    #itemContainer:first-child:not(.highLight) {
         border: none;
     }
 
-    #itemContainer{
+    #itemContainer {
         padding: 0.5rem;
-        width: fit-content;
-    }
 
+        /* width: fit-content; */
+    }
 
     .lowVis {
         color: var(--bg3);

@@ -51,10 +51,10 @@
 <h1>testing page</h1>
 
 <InputField disabled={true} value="abc def"></InputField>
-
+<!-- 
 <HistoryList
     on:indexChange={(change) => {
         console.log(change);
     }}
     histories={history}
-/>
+/> -->

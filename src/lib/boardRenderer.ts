@@ -14,7 +14,7 @@ export class BoardRenderer {
     board: number[][];
 
 
-    constructor (size: number, canvas: HTMLCanvasElement, boardObj: Board){
+    constructor(size: number, canvas: HTMLCanvasElement, boardObj: Board) {
         //board should be a reference to the data structure
         // TODO implement layered rendering, so background/pieces dont have to rerender every time
         this.canvas = canvas;
@@ -27,10 +27,10 @@ export class BoardRenderer {
         this.fontHeight = this.fontMetric.fontBoundingBoxAscent + this.fontMetric.actualBoundingBoxDescent;
 
 
-          // delayed event scheduling
-          window.requestAnimationFrame(this.paint.bind(this));
-     
-  
+        // delayed event scheduling
+        window.requestAnimationFrame(this.paint.bind(this));
+
+
 
         // trigger rerender
         this.rerender = true;
@@ -122,6 +122,7 @@ export class BoardRenderer {
         const pieceRatio = 0.8;
         const pieceRadius = Math.round(pieceRatio * gap / 2);
 
+        const lastMove = this.boardObj.historyIndex > -1 ? this.boardObj.historyArr[this.boardObj.historyIndex].position : [-1, -1];
         ctx.lineWidth = 2
         for (let r = 1; r < this.size + 1; r++) {
             for (let c = 1; c < this.size + 1; c++) {
@@ -136,7 +137,7 @@ export class BoardRenderer {
                     ctx.fillStyle = "#dedede"
                 }
 
-                if (r == this.boardObj. lastMove[0] && c == this.boardObj.lastMove[1]) {
+                if (r == lastMove[0] && c == lastMove[1]) {
                     ctx.strokeStyle = "#fb5a48de"
                 }
 
@@ -153,8 +154,6 @@ export class BoardRenderer {
 
 
     drawHover(ctx: CanvasRenderingContext2D, w: number, h: number) {
-
-   
         if (this.board[this.boardObj.hoverpos[0]][this.boardObj.hoverpos[1]] != EMPTY) {
             return;
         }
@@ -178,5 +177,5 @@ export class BoardRenderer {
     }
 
 
-  
+
 }

@@ -10,6 +10,7 @@
         winningPlayer,
         playerColor,
         history,
+        historyIndex
     } from "$lib/board";
 
     import { BLACK, WHITE, EMPTY, WALL } from "$lib/boardLib";
@@ -188,6 +189,15 @@
             >
         </div>
     </div>
+    {#if board}
+        <HistoryList
+            histories={$history}
+            on:indexChange={(e) => {
+                board.rewind(e.detail);
+            }}
+            currentIndex={$historyIndex}
+        ></HistoryList>
+    {/if}
 </div>
 
 {#if board}
@@ -205,18 +215,9 @@
 </p> -->
     <!-- <p>board's current player: {board.curPlayer}</p> -->
 
-    {#if isHost}
+    {#if gameStarted}
         <Button on:click={newGame}>New Game</Button>
     {/if}
-{/if}
-
-{#if board}
-    <HistoryList
-        histories={$history}
-        on:indexChange={(e) => {
-            board.rewind(e.detail);
-        }}
-    ></HistoryList>
 {/if}
 
 <style>
@@ -236,10 +237,10 @@
 
     canvas {
         /* padding: 0.5rem; */
-       border: none;
-       margin: none;
-       padding: none;
-       border: 20px solid var(--board);
+        border: none;
+        margin: none;
+        padding: none;
+        border: 20px solid var(--board);
     }
 
     .noclick {
@@ -248,7 +249,6 @@
 
     #canvasHolder {
         flex: 0 0 auto;
-      
     }
 
     #rightColumn {
