@@ -195,8 +195,9 @@ export class Board {
             this.historyArr = []
         }
         else{
-
-            this.historyArr = this.historyArr.splice(index, this.historyArr.length - index);
+            console.log(index, this.historyArr.length - index);
+            
+            this.historyArr = this.historyArr.splice(0, index + 1);
         }
         this.historyIndex = index;
         history.set(this.historyArr);

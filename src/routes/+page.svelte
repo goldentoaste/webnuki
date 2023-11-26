@@ -164,11 +164,9 @@
         Self play
     </Button>
 
-
-    
     {#if gameStarted}
-    <Button on:click={newGame}>New Game</Button>
-{/if}
+        <Button on:click={newGame}>New Game</Button>
+    {/if}
 </div>
 
 <div class="rowGroup">
@@ -185,16 +183,15 @@
     <div class="colGroup">
         <div id="stats">
             {#if board}
-            <span>You are player: {colorToName($playerColor)}</span>
-            <span>Current player: {colorToName($currentPlayer)}</span>
-            <span>Black score: {$blackScore}</span>
-            <span>White score: {$whiteScore}</span>
+                <span>You are player: {colorToName($playerColor)}</span>
+                <span>Current player: {colorToName($currentPlayer)}</span>
+                <span>Black score: {$blackScore}</span>
+                <span>White score: {$whiteScore}</span>
 
-            {#if $winningPlayer == BLACK || $winningPlayer == WHITE}
-                {colorToName($winningPlayer)} has won the game!
+                {#if $winningPlayer == BLACK || $winningPlayer == WHITE}
+                    {colorToName($winningPlayer)} has won the game!
+                {/if}
             {/if}
-
-        {/if}
         </div>
         {#if board}
             <HistoryList
@@ -203,12 +200,14 @@
                     board.rewind(e.detail);
                 }}
                 currentIndex={$historyIndex}
+                on:commit={(e)=>{
+                    board.deleteFuture(e.detail)
+                }}
             ></HistoryList>
         {/if}
     </div>
 
     <div class="colGroup">
-       
         <MessageList data={messages} />
         <div class="rowGroup">
             <InputField
@@ -255,8 +254,7 @@
         flex: 0 0 auto;
     }
 
-
-    #stats{
+    #stats {
         display: flex;
         flex-direction: column;
         gap: 0.5rem;

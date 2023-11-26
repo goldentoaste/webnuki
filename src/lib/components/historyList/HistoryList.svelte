@@ -6,11 +6,13 @@
     export let histories: History[];
     export let currentIndex: number;
 
-    const dispatch = createEventDispatcher<{ indexChange: number }>();
+    const dispatch = createEventDispatcher<{ indexChange: number }  >();
 
     $: {
         dispatch("indexChange", currentIndex);
     }
+
+
 </script>
 
 <div class="historyContainer">
@@ -20,7 +22,14 @@
             {index}
             highLight={index == currentIndex}
             on:click={() => {
-                currentIndex = index;
+               
+
+                if (index == currentIndex){
+                    // @ts-ignore
+                    dispatch("commit", index);
+                }else{
+                    currentIndex = index;
+                }
             }}
         />
     {/each}

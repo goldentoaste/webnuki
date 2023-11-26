@@ -63,8 +63,8 @@
                 >
             {/if}
         </div>
-        <div id="buttonWrapper" class:disabled={!showButton || highLight}>
-            <Button on:click disabled={!showButton}>Rewind</Button>
+        <div id="buttonWrapper" class:disabled={!showButton}>
+            <Button on:click disabled={!showButton}>{highLight? "Commit": "Rewind" }</Button>
         </div>
     </div>
 </div>
