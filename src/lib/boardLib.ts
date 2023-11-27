@@ -16,12 +16,19 @@ export const EMPTY = 0;
 
 export function col2Str(col: number, size: number = 0) {
 
+    if(col >= 9){
+        // skip letter I
+        return String.fromCharCode(col + 65);
+    }
     return String.fromCharCode(col + 64);
 }
 
 export function colFStr(col: string, size: number = 0) {
     // size optional
-
+    if(col.charCodeAt(0) >= 73){
+        // skip letter I
+        col.charCodeAt(0) - 65; 
+    }
     return col.charCodeAt(0) - 64;
 }
 

@@ -74,9 +74,13 @@ export class BoardRenderer {
 
 
 
+        let offset = 0;
         for (let i = 1; i < this.size + 1; i++) {
-            ctx.fillText(String.fromCharCode(i + 64), i * gap, halfGap);
-            ctx.fillText(String.fromCharCode(i + 64), i * gap, h - halfGap + this.fontHeight);
+            if(i >=9){
+offset = 1;
+            }
+            ctx.fillText(String.fromCharCode(i + 64 + offset), i * gap, halfGap);
+            ctx.fillText(String.fromCharCode(i + 64 + offset), i * gap, h - halfGap + this.fontHeight);
         }
 
         for (let i = 1; i < this.size + 1; i++) {
