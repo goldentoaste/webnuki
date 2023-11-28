@@ -1,5 +1,5 @@
 
-import { writable } from "svelte/store";
+import { get, writable } from "svelte/store";
 import type { History } from "./boardLib"
 import { WALL, BLACK, WHITE, EMPTY } from "./boardLib";
 import { BoardRenderer } from "./boardRenderer";
@@ -118,9 +118,13 @@ export class Board {
     }
 
     changeSize(size: number) {
+
         this.initialize(size)
-        this.reset(this.playerColor);
-        this.renderer.changeSize(size)
+        this.reset(this.playerColor, false);
+
+        this.renderer.changeSize(size);
+
+      
     }
 
     addToHistory(h: History) {
@@ -232,7 +236,7 @@ export class Board {
         this.whiteScore = state.whiteScore;
     }
 
-    reset(color: number) {
+    reset(color: number , changePlayer = false) {
         // TODO reset actions
         this.playerColor = color;
         playerColor.set(color)
@@ -246,8 +250,10 @@ export class Board {
         this.whiteScore = 0
         whiteScore.set(0)
 
+      if(changePlayer){
         winningPlayer.set(EMPTY);
         this.winningPlayer = EMPTY;
+      }
 
         lastPlay.set(undefined);
 
@@ -402,8 +408,7 @@ export class Board {
     clickEvent(e: MouseEvent) {
         const [row, col] = this.roundToNearestPoint(e.offsetX, e.offsetY);
 
-        console.log(this.board);
-        
+
         if (e.button !== 0) {
             return
         }

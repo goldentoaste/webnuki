@@ -18,10 +18,11 @@ export class BoardRenderer {
         //board should be a reference to the data structure
         // TODO implement layered rendering, so background/pieces dont have to rerender every time
         this.canvas = canvas;
-        this.changeSize(size)
-       
+      
         this.boardObj = boardObj;
         this.board = boardObj.board;
+        this.changeSize(size)
+       
         const ctx = canvas.getContext("2d")
         ctx!.font = "14pt sans-serif";
         this.fontMetric = ctx!.measureText("O");
@@ -40,6 +41,7 @@ export class BoardRenderer {
     changeSize(size:number){
         this.size = size;
         this.rerender = true;
+        this.board = this.boardObj.board;
     }
 
 
@@ -137,6 +139,7 @@ offset = 1;
         for (let r = 1; r < this.size + 1; r++) {
             for (let c = 1; c < this.size + 1; c++) {
                 const color = this.board[r][c];
+             
                 if (color == EMPTY) { continue; }
                 if (color == BLACK) {
                     ctx.strokeStyle = "#0d0c09"

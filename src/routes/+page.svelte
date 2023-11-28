@@ -175,7 +175,7 @@
         // handle if game options changed
 
         if (parseInt(boardSize) != board.size) {
-            changeBoardSize(parseInt(boardSize));
+            changeBoardSize(parseInt(boardSize), true);
         }
     }
 </script>
@@ -220,7 +220,7 @@
         Self play
     </Button>
 
-    <Button on:click={newGame}>New Game</Button>
+    <Button on:click={newGame} disabled={!gameStarted}>New Game</Button>
 
     <div class="vertDivider"></div>
     <Button
