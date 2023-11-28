@@ -16,6 +16,7 @@
     import { BLACK, WHITE, EMPTY, WALL } from "$lib/boardLib";
     import Button from "$lib/components/Button.svelte";
     import MessageList from "$lib/components/MessageList.svelte";
+    import ModalDialog from "$lib/components/ModalDialog.svelte";
     import HistoryList from "$lib/components/historyList/HistoryList.svelte";
     import InputField from "$lib/components/inputField.svelte";
 
@@ -28,6 +29,7 @@
         roomName: string,
         isHost: boolean,
     ) => (msg: string) => void;
+
     onMount(async () => {
         const { makeConnection } = await import("$lib/connection");
         // @ts-ignore
@@ -56,22 +58,36 @@
         messages = [msg, ...messages];
 
         const blocks = msg.split(" ");
-        if (blocks[0] === "#reset") {
-            // other player just did reset, requesting us to reset
-            const color = parseInt(blocks[1]);
-            reset(color);
-        } else if (blocks[0] == "#play") {
-            // other just played a move, request us to play the same move to stay in sync
-            const [row, col] = blocks[1]
-                .split(",")
-                .map((item) => parseInt(item));
-            play(row, col);
-        } else if (blocks[0] == "#rewind") {
-            const index = parseInt(blocks[1]);
-            board.rewind(index);
-        } else if (blocks[0] == "#commit") {
-            const index = parseInt(blocks[1]);
-            board.deleteFuture(index);
+
+        switch (blocks[0]) {
+            case "#reset":
+                const color = parseInt(blocks[1]);
+                reset(color);
+                break;
+            case "#play": {
+                const [row, col] = blocks[1]
+                    .split(",")
+                    .map((item) => parseInt(item));
+                play(row, col);
+                break;
+            }
+            case "#rewind": {
+                const index = parseInt(blocks[1]);
+                board.rewind(index);
+                break;
+            }
+            case "#commit": {
+                const index = parseInt(blocks[1]);
+                board.deleteFuture(index);
+                break;
+            }
+            case "#changeSize": {
+                const newSize = parseInt(blocks[1]);
+                if (newSize != board.size) {
+                    changeBoardSize(newSize);
+                }
+                break;
+            }
         }
     };
 
@@ -82,8 +98,11 @@
         sendMessage = makeCon(onOpen, onMessage, roomName, isHost);
     }
 
+    // board state
+
     let board: Board;
     let canvas: HTMLCanvasElement;
+
     onMount(() => {
         // ninuki board state
         board = new Board(19, canvas);
@@ -112,6 +131,7 @@
     }
 
     function sendTextMessage() {
+        if (!currentMessage) return;
         messages.unshift(currentMessage);
         messages = messages;
         sendMessage(currentMessage);
@@ -128,6 +148,14 @@
         sendMessage(`#commit ${index}`);
     }
 
+    function changeBoardSize(newSize: number, sendMsg = false) {
+        board.changeSize(newSize);
+
+        if (sendMsg) {
+            sendMessage(`#changeSize ${newSize}`);
+        }
+    }
+
     $: {
         if ($lastPlay !== undefined && !board.selfPlay) {
             sendMessage(`#play ${$lastPlay[0]},${$lastPlay[1]}`);
@@ -137,17 +165,31 @@
     $: {
         gameStarted = $winningPlayer == EMPTY;
     }
+
+    // modal window related ...
+
+    let showOptions = false;
+    let boardSize = "19";
+
+    function confirmGameOptions() {
+        // handle if game options changed
+
+        if (parseInt(boardSize) != board.size) {
+            changeBoardSize(parseInt(boardSize));
+        }
+    }
 </script>
 
 <h1>WebNuki!</h1>
 <p>Duel in Ninuki on the web!</p>
 
 <div class="rowGroup">
-    <p>Room Name:</p>
+    <!-- <p>Room Name:</p> -->
     <InputField
         placeholder="Room name here"
         disabled={isHost}
         bind:value={roomName}
+        label="Room Name:"
     />
 </div>
 
@@ -178,14 +220,18 @@
         Self play
     </Button>
 
-    {#if gameStarted}
-        <Button on:click={newGame}>New Game</Button>
-    {/if}
+    <Button on:click={newGame}>New Game</Button>
+
+    <div class="vertDivider"></div>
+    <Button
+        on:click={() => {
+            showOptions = true;
+        }}>Game options</Button
+    >
 </div>
 
-<div class="rowGroup" style="height:800px">
+<div class="rowGroup" style="height:740px">
     <div id="canvasHolder">
-        <h2>Board</h2>
         <canvas
             id="nukiCanvas"
             bind:this={canvas}
@@ -228,11 +274,23 @@
                 placeholder="message to send here"
                 bind:value={currentMessage}
                 on:submit={sendTextMessage}
+                on:enter={sendTextMessage}
             />
             <Button on:click={sendTextMessage}>Send</Button>
         </div>
     </div>
 </div>
+
+<!-- options menu -->
+<ModalDialog bind:visible={showOptions} on:confirm={confirmGameOptions} title="Game options">
+    <div class="rowGroup">
+        <InputField
+            label="Board size"
+            pattern="[1-9]+[1-9]*"
+            bind:value={boardSize}
+        ></InputField>
+    </div>
+</ModalDialog>
 
 <style>
     .rowGroup {
@@ -242,8 +300,6 @@
         margin: 1rem;
         width: fit-content;
     }
-
-  
 
     canvas {
         /* padding: 0.5rem; */
@@ -259,23 +315,29 @@
 
     #canvasHolder {
         flex: 0 0 auto;
-
     }
 
     .colGroup {
         display: flex;
         flex-direction: column;
         gap: 0.5rem;
-       
-        width: fit-content;
-    
-        flex: 1 1 auto;
 
+        width: fit-content;
+
+        flex: 1 1 auto;
     }
 
     #stats {
         display: flex;
         flex-direction: column;
         gap: 0.5rem;
+    }
+
+    .vertDivider {
+        height: auto;
+        width: 2px;
+        background-color: var(--bg3);
+
+        margin: 0 0.5rem;
     }
 </style>

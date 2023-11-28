@@ -85,7 +85,18 @@ export class Board {
     width = 0;
 
     constructor(size: number, canvas: HTMLCanvasElement) {
+        this.initialize(size)
+        this.renderer = new BoardRenderer(size, canvas, this);
+
+        canvas.addEventListener("mousemove", this.hoverEvent.bind(this))
+        canvas.addEventListener("mouseup", this.clickEvent.bind(this))
+
+        this.width = this.renderer.canvas.width;
+    }
+
+    initialize(size: number) {
         this.size = size;
+        this.board = [];
         boardSize.set(size);
         for (let i = 0; i < size + 2; i++) {
             let row = Array(size + 2);
@@ -101,14 +112,15 @@ export class Board {
             this.board[i][size + 1] = WALL;
         }
 
-        this.renderer = new BoardRenderer(size, canvas, this);
-
-        canvas.addEventListener("mousemove", this.hoverEvent.bind(this))
-        canvas.addEventListener("mouseup", this.clickEvent.bind(this))
-
-        this.width = this.renderer.canvas.width;
 
 
+
+    }
+
+    changeSize(size: number) {
+        this.initialize(size)
+        this.reset(this.playerColor);
+        this.renderer.changeSize(size)
     }
 
     addToHistory(h: History) {
@@ -120,7 +132,7 @@ export class Board {
 
     applyHistory(h: History) {
         console.log("applying", h);
-        
+
         this.board[h.position[0]][h.position[1]] = h.color;
 
         let count = 0;
@@ -145,7 +157,7 @@ export class Board {
         this.updateScore(h.color, -count);
         this.currentPlayer = h.color;
 
-        
+
     }
 
     updateWinner(winner: number) {
@@ -157,15 +169,15 @@ export class Board {
 
     rewind(index: number) {
         // reverses the gamestate after
-        
-        if (this.historyIndex == -1 || index < 0 || index >= this.historyArr.length){
+
+        if (this.historyIndex == -1 || index < 0 || index >= this.historyArr.length) {
             return;
         }
-        
+
         let diff = index - this.historyIndex;
 
         console.log(diff);
-        
+
 
         while (diff > 0 && this.historyIndex < this.historyArr.length) {
             this.historyIndex++;
@@ -175,7 +187,7 @@ export class Board {
 
 
         while (diff < 0 && this.historyIndex >= 0) {
-        
+
             this.undoHistory(this.historyArr[this.historyIndex]);
             this.historyIndex--;
             diff++;
@@ -190,12 +202,12 @@ export class Board {
     }
 
     deleteFuture(index: number) {
-        if (index == -1){
+        if (index == -1) {
             this.historyArr = []
         }
-        else{
+        else {
             console.log(index, this.historyArr.length - index);
-            
+
             this.historyArr = this.historyArr.splice(0, index + 1);
         }
         this.historyIndex = index;
@@ -389,7 +401,10 @@ export class Board {
 
     clickEvent(e: MouseEvent) {
         const [row, col] = this.roundToNearestPoint(e.offsetX, e.offsetY);
-        if(e.button !== 0){
+
+        console.log(this.board);
+        
+        if (e.button !== 0) {
             return
         }
         if ((this.currentPlayer != this.playerColor && !this.selfPlay) || this.board[row][col] != EMPTY || this.historyIndex != this.historyArr.length - 1) {

@@ -1,12 +1,15 @@
 <script lang="ts">
+    import { createEventDispatcher } from "svelte";
+
     export let value = "";
     export let disabled = false;
     export let placeholder = ">_";
     export let suffix = "";
-    export let pattern = "";
-
+    export let pattern = "[\\s\\S]*";
+    export let label = "";
     import { fade, fly } from "svelte/transition";
     let showMsg = false;
+    let dispatch = createEventDispatcher();
     function onClick() {
         console.log("on clickk");
 
@@ -28,11 +31,22 @@
             inputField.value = value;
         }
     }
+
+    function enter(e: KeyboardEvent) {
+        if (e.key === "Enter") {
+            dispatch("enter");
+        }
+    }
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <div class="parent" class:clickable={disabled} on:click={onClick}>
+    {#if label}
+        <span class="label">
+            {label}
+        </span>
+    {/if}
     <input
         type="text"
         {placeholder}
@@ -42,7 +56,7 @@
         {pattern}
         on:input={checkInput}
         {value}
-        on:submit
+        on:keypress={enter}
     />
 
     {#if showMsg}
@@ -50,7 +64,7 @@
             class="msg"
             in:fly={{
                 x: -10,
-                duration:500
+                duration: 500,
             }}
             out:fade={{ duration: 300 }}
         >
@@ -66,7 +80,8 @@
         align-self: stretch;
         position: relative;
         display: flex;
-        width: fit-content  ;
+        width: fit-content;
+        align-items: center;
     }
     input {
         all: unset;
@@ -115,5 +130,9 @@
 
         transform: translate(0, -50%);
         color: var(--bg2);
+    }
+
+    .label{
+        margin: 0 0.5rem;
     }
 </style>

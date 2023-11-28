@@ -18,7 +18,8 @@ export class BoardRenderer {
         //board should be a reference to the data structure
         // TODO implement layered rendering, so background/pieces dont have to rerender every time
         this.canvas = canvas;
-        this.size = size;
+        this.changeSize(size)
+       
         this.boardObj = boardObj;
         this.board = boardObj.board;
         const ctx = canvas.getContext("2d")
@@ -33,6 +34,11 @@ export class BoardRenderer {
 
 
         // trigger rerender
+        this.rerender = true;
+    }
+
+    changeSize(size:number){
+        this.size = size;
         this.rerender = true;
     }
 
