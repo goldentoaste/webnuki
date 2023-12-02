@@ -5,6 +5,7 @@
 
     export let visible = false;
     export let title = "";
+    export let cancel = true;
 
     const dispatch = createEventDispatcher();
 
@@ -36,7 +37,9 @@
 
         <div class="botBar">
             <Button on:click={confirm}>Confirm</Button>
-            <Button on:click={() => (visible = false)}>Cancel</Button>
+        {#if cancel}
+        <Button on:click={() => (visible = false)}>Cancel</Button>
+        {/if}
         </div>
     </div>
 {/if}

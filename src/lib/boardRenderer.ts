@@ -47,6 +47,8 @@ export class BoardRenderer {
 
     // canvas rendering section
     paint() {
+       
+        
         if (!(this.rerender)) {
             requestAnimationFrame(this.paint.bind(this))
             return;

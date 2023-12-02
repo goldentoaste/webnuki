@@ -53,7 +53,7 @@ export function coordFStr(input: string, size: number) {
     // assume values less than 26
 
     return [
-        rowFStr(input.charAt(0), size),
-        colFStr(input.charAt(1), size)
+        rowFStr(input.slice(1), size),
+        colFStr(input.charAt(0).toUpperCase(), size)
     ]
 }

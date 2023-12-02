@@ -13,7 +13,14 @@
         historyIndex,
     } from "$lib/board";
 
-    import { BLACK, WHITE, EMPTY, WALL } from "$lib/boardLib";
+    import {
+        BLACK,
+        WHITE,
+        EMPTY,
+        WALL,
+        coordFStr,
+        coord2Str,
+    } from "$lib/boardLib";
     import Button from "$lib/components/Button.svelte";
     import MessageList from "$lib/components/MessageList.svelte";
     import ModalDialog from "$lib/components/ModalDialog.svelte";
@@ -88,6 +95,12 @@
                 }
                 break;
             }
+            case "#load": {
+                const input = msg.slice(6);
+                console.log(input);
+                
+                loadBoard(input, false);
+            }
         }
     };
 
@@ -150,9 +163,47 @@
 
     function changeBoardSize(newSize: number, sendMsg = false) {
         board.changeSize(newSize);
-
+        if (board.currentPlayer != WALL) {
+            board.currentPlayer = BLACK;
+            $currentPlayer = BLACK;
+        }
         if (sendMsg) {
             sendMessage(`#changeSize ${newSize}`);
+        }
+    }
+
+    function loadBoard(input: string, sendMsg = false) {
+        const lines = input.split("\n");
+        const first = lines[0].split(" ");
+
+
+        
+        if (first[0] == "boardsize") {
+            const size = parseInt(first[1]);
+            if (size >= 5 && size <= 26) {
+                changeBoardSize(size);
+            }
+
+            try {
+                lines.splice(1).forEach((element) => {
+                    if (element.length > 0) {
+                        const [row, col] = coordFStr(element, board.size);
+                        console.log(row, col);
+
+                        board.playMove(row, col);
+                    }
+                });
+            } catch {
+                alert("error while recreating board state, clearing.");
+                board.reset(board.playerColor);
+            }
+        } else {
+            alert("no board size provided");
+            return;
+        }
+
+        if (sendMsg) {
+            sendMessage(`#load ${input}`);
         }
     }
 
@@ -177,6 +228,25 @@
         if (parseInt(boardSize) != board.size) {
             changeBoardSize(parseInt(boardSize), true);
         }
+    }
+
+    let showLoad = false;
+    let loadText = "";
+
+    function confirmLoad() {
+        loadBoard(loadText, true);
+    }
+
+    let showExport = false;
+    let exportText = "";
+
+    function exportBoard() {
+        exportText = `boardsize ${board.size}\n`;
+
+        board.historyArr.forEach((hist) => {
+            const [row, col] = hist.position;
+            exportText += `${coord2Str(row, col, board.size)}\n`;
+        });
     }
 </script>
 
@@ -228,6 +298,25 @@
             showOptions = true;
         }}>Game options</Button
     >
+
+    <Button
+        on:click={() => {
+            showLoad = true;
+        }}
+        disabled={!gameStarted}
+    >
+        Load
+    </Button>
+
+    <Button
+        on:click={() => {
+            exportBoard();
+            showExport = true;
+        }}
+        disabled={!gameStarted}
+    >
+        Export
+    </Button>
 </div>
 
 <div class="rowGroup" style="height:740px">
@@ -282,7 +371,11 @@
 </div>
 
 <!-- options menu -->
-<ModalDialog bind:visible={showOptions} on:confirm={confirmGameOptions} title="Game options">
+<ModalDialog
+    bind:visible={showOptions}
+    on:confirm={confirmGameOptions}
+    title="Game options"
+>
     <div class="rowGroup">
         <InputField
             label="Board size"
@@ -290,6 +383,36 @@
             bind:value={boardSize}
         ></InputField>
     </div>
+</ModalDialog>
+
+<ModalDialog
+    bind:visible={showLoad}
+    on:confirm={confirmLoad}
+    title="Load previous game"
+>
+    <textarea
+        placeholder={"boardsize 19\na1\na5\ng2\n...\n(assumed black starts)"}
+        bind:value={loadText}
+        rows="19"
+        cols="30"
+    >
+    </textarea>
+</ModalDialog>
+
+<ModalDialog
+    bind:visible={showExport}
+    on:confirm={() => {
+        showExport = false;
+    }}
+    title="Exported game"
+    cancel={false}
+>
+    <textarea
+        placeholder={"boardsize 19\na1\na5\ng2\n...\n(assumed black starts)"}
+        value={exportText}
+        rows="19"
+        cols="30"
+    />
 </ModalDialog>
 
 <style>
@@ -339,5 +462,25 @@
         background-color: var(--bg3);
 
         margin: 0 0.5rem;
+    }
+
+    textarea {
+        resize: none;
+
+        background-color: var(--bg1);
+        border: 2px solid var(--fg1);
+
+        color: var(--fg);
+        outline: none;
+
+        font-size: 11pt;
+    }
+
+    textarea:focus {
+        outline: none;
+    }
+
+    textarea::placeholder {
+        color: var(--fg1);
     }
 </style>
