@@ -61,9 +61,11 @@
         }
     };
 
-    let onMessage = (msg: string) => {
-        messages = [msg, ...messages];
+    const commands = new Set([
+        "#reset", "#play", "#rewind", "#commit", "#changeSize", "#load"
+    ]);
 
+    let onMessage = (msg: string) => {
         const blocks = msg.split(" ");
 
         switch (blocks[0]) {
@@ -100,6 +102,10 @@
                 console.log(input);
                 
                 loadBoard(input, false);
+            }
+
+            default:{
+                messages = ["opponent: " + msg, ...messages];
             }
         }
     };
@@ -145,7 +151,10 @@
 
     function sendTextMessage() {
         if (!currentMessage) return;
-        messages.unshift(currentMessage);
+        if (commands.has(currentMessage.split(" ")[0]) ){
+            currentMessage = currentMessage.slice(1);
+        }
+        messages.unshift("you: " + currentMessage);
         messages = messages;
         sendMessage(currentMessage);
         currentMessage = "";
@@ -303,7 +312,6 @@
         on:click={() => {
             showLoad = true;
         }}
-        disabled={!gameStarted}
     >
         Load
     </Button>
@@ -313,7 +321,6 @@
             exportBoard();
             showExport = true;
         }}
-        disabled={!gameStarted}
     >
         Export
     </Button>
