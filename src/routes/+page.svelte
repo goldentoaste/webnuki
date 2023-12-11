@@ -257,6 +257,8 @@
             exportText += `${coord2Str(row, col, board.size)}\n`;
         });
     }
+
+    let showHelp = false;
 </script>
 
 <h1>WebNuki!</h1>
@@ -299,7 +301,15 @@
         Self play
     </Button>
 
+
+
     <Button on:click={newGame} disabled={!gameStarted}>New Game</Button>
+    <Button
+    on:click={()=>{
+        showHelp = true;
+    }}>
+        Help
+    </Button>
 
     <div class="vertDivider"></div>
     <Button
@@ -420,6 +430,55 @@
         rows="19"
         cols="30"
     />
+</ModalDialog>
+
+
+<ModalDialog
+title="Help"
+cancel={false}
+bind:visible={showHelp}
+>
+Note: if anything unexpected happens, try refreshing the page and start again. <br>
+Note2: This page is made to run on desktop browser, so some ui might not behave correctly on a touchscreen(plus the page is too big to fit). 
+<h3>Start a game</h3>
+<ol>
+    <li>
+        One of the players can be the "host", by typing a room name of your choice, then click "Make room"
+    </li>
+    <li>
+        Send (somehow) the room name to the other player, they can paste the name into the room name field and click "Connect to room"
+    </li>
+    <li>
+        Connection should happen in 2 seconds or so, a success message will appear in the chat if so. Black player can play the first move now.
+    </li>
+    <li>
+        Either player can click "new game" at any point to reset the board. Player color is chosen randomly.
+    </li>
+</ol>
+
+<h3>History/rewind</h3>
+<p>As moves are played, the section below the scoreboard will show moves played. If you hover mouse over one of the moves, 
+    a "Rewind" button should appear, either player can rewind to a previous move to view a previous board state. To start playing
+    from a previous state, click on "Commit" on the current move. Note that "Commit" cannot be undone, so make sure both players agree on undoing moves.
+</p>
+
+
+<h3>Game options</h3>
+Current the only option is just to change board size.
+<ol>
+    <li>Boardsize: When a game has started, changing boardsize and confirming will set both player's board to the size and start a new game.</li>
+</ol>
+
+<h3>
+    Load/Export
+</h3>
+"Export" button shows a dialog with the current board state as text. You can copy the text to record the current game.
+The "Load" button opens a dialog which you can paste in a previously saved game to start a game from the saved state. 
+<br>
+<br>
+Note that export and load assumes black player starts, and player color alternates to ensure board state is valid. 
+Also load doesn't do a lot of checking to make sure the pasted text is valid, so it's important the format is same the exported format.
+
 </ModalDialog>
 
 <style>

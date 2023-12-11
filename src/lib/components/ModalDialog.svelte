@@ -26,9 +26,9 @@
 
     <div class="modal" transition:fly={{ y: -25, duration: 200 }}>
         {#if title}
-            <h3>
+            <h2>
                 {title}
-            </h3>
+            </h2>
             <div class="horiDivider"></div>
         {/if}
 
@@ -92,6 +92,9 @@
 
         background-color: var(--bg);
         border: 2px solid var(--bg3);
+
+        overflow-y: auto;
+        max-height: 90%;
     }
 
     .horiDivider {
