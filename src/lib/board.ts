@@ -199,6 +199,9 @@ export class Board {
 
         history.set(this.historyArr);
         historyIndex.set(this.historyIndex)
+        console.log(this.currentPlayer);
+        
+        currentPlayer.set(this.currentPlayer)
 
         // check if we need to undo or redo a player winning after applying history
         this.updateWinner(this.historyArr[this.historyIndex].winner)
