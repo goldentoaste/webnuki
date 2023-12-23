@@ -21,9 +21,6 @@
         coordFStr,
         coord2Str,
     } from "$lib/boardLib";
-
-
-
     import Button from "$lib/components/Button.svelte";
     import MessageList from "$lib/components/MessageList.svelte";
     import ModalDialog from "$lib/components/ModalDialog.svelte";
@@ -31,38 +28,55 @@
     import HistoryList from "$lib/components/historyList/HistoryList.svelte";
     import InputField from "$lib/components/inputField.svelte";
 
-    
     import { onMount } from "svelte";
 
-
+    import { MsgType, type Message, type UserRole } from "$lib/peerTypes";
     //  peer connection garbage.
-    let makeCon: (
-        onOpen: any,
-        onMessage: Function,
+    let conToHost: (
         roomName: string,
-        isHost: boolean,
-    ) => (msg: string) => void;
+        onOpen: () => void,
+        onMessage: (msg: Message) => void,
+    ) => (msg: Message) => void;
+    let startAsHost: (
+        roomName: string,
+        onOpen: () => void,
+        onMessage: (msg: Message) => void,
+    ) => (msg: Message, forwardId?: string) => void;
 
     onMount(async () => {
-        const { makeConnection } = await import("$lib/connection");
+        const { connectAsClient, hostGame } = await import(
+            "$lib/peerConnection"
+        );
         // @ts-ignore
-        makeCon = makeConnection;
+        conToHost = connectAsClient;
+        startAsHost = hostGame;
     });
 
     let roomName = "";
     let isHost = false;
+    let isSpectator = false;
+    let playerName = "";
+    let opponentName = "";
 
-    let gameStarted = false;
+    let connected = false;
     let messages: string[] = [
         "welcome to webnuki",
         "messages and plays will be here",
     ];
     let currentMessage = "";
-    let sendMessage: (msg: string) => void = (msg: string) => {};
+    let sendMessage: (msg: Message) => void = (msg: Message) => {};
 
     let onOpen = () => {
-        gameStarted = true;
-        sendMessage(`hello from ${isHost ? "host" : "client"}`);
+        connected = true;
+        if (!isHost && !isSpectator) {
+            // not host and spec -> client player
+            sendMessage({
+                msgType: MsgType.Connect,
+                originName: playerName,
+                content: ""
+            })
+        }
+
         if (isHost) {
             newGame();
         }
@@ -77,7 +91,7 @@
         "#load",
     ]);
 
-    let onMessage = (msg: string) => {
+    let onMessage = (msg: Message) => {
         const blocks = msg.split(" ");
 
         switch (blocks[0]) {
@@ -126,7 +140,12 @@
         if (roomName.length == 0) {
             return alert("Must include a room name to connect or create game!");
         }
-        sendMessage = makeCon(onOpen, onMessage, roomName, isHost);
+        if (isHost){
+            sendMessage = startAsHost(roomName, onOpen, onMessage)
+        }
+        else{
+            sendMessage = conToHost(roomName, onOpen, onMessage, );
+        }
     }
 
     // board state
@@ -154,7 +173,7 @@
     }
 
     function reset(color: number) {
-        gameStarted = true;
+        connected = true;
         board.reset(color);
     }
     function play(row: number, col: number) {
@@ -232,7 +251,6 @@
         }
     }
 
-
     // modal window related ...
 
     let showOptions = false;
@@ -280,7 +298,16 @@
         label="Room Code:"
     />
 
-
+    <InputField
+        placeholder="name..."
+        disabled={connected}
+        bind:value={playerName}
+        label="Player name"
+        on:blur={()=>{
+            console.log("blurr out");
+            
+        }}
+    />
 </div>
 
 <div class="rowGroup">
@@ -289,28 +316,28 @@
             isHost = true;
             tryConnect();
         }}
-        disabled={gameStarted}>Make a room</Button
+        disabled={connected}>Make a room</Button
     >
     <Button
         on:click={(e) => {
             isHost = false;
             tryConnect();
         }}
-        disabled={gameStarted || isHost}>Connect to room</Button
+        disabled={connected || isHost}>Connect to room</Button
     >
 
     <Button
         on:click={() => {
             board.reset(BLACK);
             board.selfPlay = true;
-            gameStarted = true;
+            connected = true;
         }}
-        disabled={gameStarted}
+        disabled={connected}
     >
         Self play
     </Button>
 
-    <Button on:click={newGame} disabled={!gameStarted}>New Game</Button>
+    <Button on:click={newGame} disabled={!connected}>New Game</Button>
     <Button
         on:click={() => {
             showHelp = true;
@@ -349,7 +376,7 @@
         <canvas
             id="nukiCanvas"
             bind:this={canvas}
-            class:noclick={!gameStarted}
+            class:noclick={!connected}
             width="700px"
             height="700px"
         />
@@ -441,7 +468,7 @@
 </ModalDialog>
 
 <ModalDialog title="Help" cancel={false} bind:visible={showHelp}>
-    <HelpText/>
+    <HelpText />
 </ModalDialog>
 
 <style>

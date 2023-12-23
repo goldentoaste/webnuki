@@ -37,6 +37,7 @@
             dispatch("enter");
         }
     }
+    
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
@@ -57,6 +58,7 @@
         on:input={checkInput}
         {value}
         on:keypress={enter}
+        on:blur
     />
 
     {#if showMsg}

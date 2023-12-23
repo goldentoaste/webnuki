@@ -5,11 +5,9 @@
     import type { History } from "$lib/boardLib";
     import HistoryList from "$lib/components/historyList/HistoryList.svelte";
     import Button from "$lib/components/Button.svelte";
+    import Dropdown from "$lib/components/dropdown.svelte";
 
-    onMount(async () => {
-        const { test } = await import("$lib/test");
-        test();
-    });
+ 
 
     const history: History[] = [
         {
@@ -71,7 +69,16 @@
 </div>
 
 <Button on:click={()=>{stuff = [...stuff, "stuff"]}} > Test</Button>
+<Dropdown title="abc abc">
+    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Exercitationem, doloremque.</p>
+    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Exercitationem, doloremque.</p>
+    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Exercitationem, doloremque.</p>
+    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Exercitationem, doloremque.</p>
 
+</Dropdown>
+<p>after </p>
+<p>after </p>
+<p>after </p>
 <style>
 
 

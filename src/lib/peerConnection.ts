@@ -1,26 +1,5 @@
 import { Peer, type DataConnection } from "peerjs"
-export enum MsgType {
-    Reset,
-    Play,
-    Rewind,
-    Commit,
-    ChangeSize,
-    Load,
-    Connect,
-    Text
-}
-
-export interface Message {
-    originName: string,
-    msgType: MsgType,
-    content: string
-}
-
-export enum UserRole {
-    Host,
-    Player,
-    Spectator
-}
+import type {Message} from "$lib/peerTypes"
 
 const gameId = "7388b9d62fba";
 
@@ -103,6 +82,11 @@ export function connectAsClient(roomName: string, onOpen: () => void, onMessage:
         host.on("close", () => {
             console.log("connection to host closed");
             clearInterval(interval);
+        });
+
+
+        host.on("data", (data)=>{
+            onMessage(JSON.parse(data as string))
         })
     }, 500);
 
