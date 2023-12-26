@@ -35,7 +35,7 @@
 
     .title {
         display: flex;
-        gap: 0.5rem;
+        gap: 1rem;
         flex-direction: row;
         background-color: var(--bg2);
         color: var(--fg);
@@ -43,6 +43,8 @@
         padding: 0.75rem;
 
         align-items: center;
+
+        user-select: none;
     }
 
     p {

@@ -409,7 +409,7 @@
             placeholder="name..."
             disabled={connected}
             bind:value={localName}
-            label="Player name"
+            label="Player Name"
             on:blur={() => {
                 console.log("blurr out");
             }}
@@ -461,6 +461,8 @@
             Help
         </Button>
     </div>
+
+    <div class="horiDivider"></div>
 
     <div class="rowGroup">
         <Button on:click={newGame} disabled={!connected}>New Game</Button>
@@ -640,6 +642,15 @@
         background-color: var(--bg3);
 
         margin: 0 0.5rem;
+    }
+
+    .horiDivider{
+        height: 2px;
+        width: auto;
+
+        background-color: var(--bg3);
+
+        margin: 0.25rem 0.5rem ;
     }
 
     textarea {
