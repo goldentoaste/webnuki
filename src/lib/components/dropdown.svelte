@@ -2,36 +2,36 @@
     export let show = false;
     export let title = "";
 
-
-    let content  : HTMLElement;
+    let content: HTMLElement;
 </script>
 
 <div class="parent">
     <div>
-        <div class="title" on:click={()=>show=!show}>
-            <div class="arrow" >
+        <div class="title" on:click={() => (show = !show)}>
+            <div class="arrow">
                 <div class="arrowBorder" class:show>
                     <div class="arrowCenter"></div>
                 </div>
             </div>
-           <p> {title}</p>
+            <p>{title}</p>
         </div>
     </div>
 
-
-    <div class="content" class:show  style="--contentHeight:{content?content.clientHeight:0}px;">
-<div class="innerContent" bind:this={content}> <slot></slot></div>
+    <div
+        class="content"
+        class:show
+        style="--contentHeight:{content ? content.clientHeight : 0}px;"
+    >
+        <div class="innerContent" bind:this={content}>
+            <slot />
+        </div>
     </div>
 </div>
 
 <style>
-
-
-
     .parent {
         width: fit-content;
     }
-
 
     .title {
         display: flex;
@@ -40,21 +40,21 @@
         background-color: var(--bg2);
         color: var(--fg);
         transition: filter 300ms ease-out;
-        padding:   0.75rem;
+        padding: 0.75rem;
 
         align-items: center;
     }
 
-    p{
+    p {
         margin: 0;
         font-size: large;
         color: var(--fg);
     }
 
-    .title:hover{
-        filter:brightness(0.9);
+    .title:hover {
+        filter: brightness(0.9);
     }
-    .title:active{
+    .title:active {
         filter: brightness(0.8);
     }
 
@@ -66,7 +66,6 @@
         height: 1rem;
 
         position: relative;
-
     }
 
     .arrowBorder {
@@ -80,13 +79,11 @@
 
         /* transition: all 300ms ease-out; */
 
-
         transition-property: left;
         transition-duration: 300ms;
         transition-timing-function: ease-out;
-   
     }
-    .arrowCenter{
+    .arrowCenter {
         width: 0.3rem;
         height: 0.3rem;
 
@@ -97,12 +94,11 @@
         translate: -50% -50%;
     }
 
-
     .arrowBorder.show {
         left: 0.25rem;
     }
 
-    .content{
+    .content {
         max-height: 0;
         height: fit-content;
         overflow-y: hidden;
@@ -111,7 +107,7 @@
 
         transition: max-height 300ms ease-out;
         margin: 2px;
-       
+
         border: none;
     }
 
@@ -120,7 +116,7 @@
         border: 2px solid var(--fg1);
         margin: 0;
     }
-.innerContent{
-    padding: 0.5rem;
-}
+    .innerContent {
+        padding: 0.5rem;
+    }
 </style>

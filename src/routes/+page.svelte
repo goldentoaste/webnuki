@@ -27,6 +27,7 @@
     import Button from "$lib/components/Button.svelte";
     import MessageList from "$lib/components/MessageList.svelte";
     import ModalDialog from "$lib/components/ModalDialog.svelte";
+    import Dropdown from "$lib/components/dropdown.svelte";
     import HelpText from "$lib/components/helpText.svelte";
     import HistoryList from "$lib/components/historyList/HistoryList.svelte";
     import InputField from "$lib/components/inputField.svelte";
@@ -271,17 +272,19 @@
 <h1>WebNuki!</h1>
 <p>Duel in Ninuki on the web!</p>
 
-<div class="rowGroup">
-    <!-- <p>Room Name:</p> -->
-    <InputField
+
+<Dropdown title="Start game">
+    <div class="rowGroup">
+        <InputField
         placeholder="Room code here"
         disabled={isHost}
         bind:value={roomName}
         label="Room Code:"
     />
+    </div>
 
+</Dropdown>
 
-</div>
 
 <div class="rowGroup">
     <Button

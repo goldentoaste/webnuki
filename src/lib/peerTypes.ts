@@ -6,7 +6,8 @@ export enum MsgType {
     ChangeSize,
     Load,
     Connect,
-    Text
+    Text,
+    PlayerInfo,
 }
 
 export interface Message {
@@ -19,4 +20,18 @@ export enum UserRole {
     Host,
     Player,
     Spectator
+}
+
+export interface ChatItem {
+    role?: UserRole,
+    color?: number,
+    content: string,
+    name?: string
+}
+
+
+export interface PlayersInfo {
+    hostName: string,
+    clientName: string,
+    
 }

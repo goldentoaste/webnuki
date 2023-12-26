@@ -30,7 +30,15 @@
 
     import { onMount } from "svelte";
 
-    import { MsgType, type Message, type UserRole } from "$lib/peerTypes";
+    import {
+        MsgType,
+        type Message,
+        type ChatItem,
+        UserRole,
+        type PlayersInfo,
+    } from "$lib/peerTypes";
+    import Dropdown from "$lib/components/dropdown.svelte";
+    import { json } from "@sveltejs/kit";
     //  peer connection garbage.
     let conToHost: (
         roomName: string,
@@ -55,84 +63,138 @@
     let roomName = "";
     let isHost = false;
     let isSpectator = false;
-    let playerName = "";
-    let opponentName = "";
+    let localName = "";
+    let hostName = "";
+    let clientName = "";
+    let hostColor = -1;
+    let clientColor = -1;
+    let localRole = UserRole.Player;
+
+    $: if (isHost) {
+        localRole = UserRole.Host;
+    } else if (isSpectator) {
+        localRole = UserRole.Spectator;
+    }
 
     let connected = false;
-    let messages: string[] = [
-        "welcome to webnuki",
-        "messages and plays will be here",
+    let messages: ChatItem[] = [
+        {
+            content: "welcome to webnuki",
+        },
+        {
+            content: "messages and plays will be here",
+        },
     ];
+
+    function addChatItem(name: string, content: string) {
+        let role = UserRole.Spectator;
+        let color = -1;
+
+        if (name === clientName) {
+            role = UserRole.Player;
+            color = clientColor;
+        } else if (name === hostName) {
+            role = UserRole.Host;
+            color = hostColor;
+        }
+
+        messages = [
+            {
+                role,
+                color,
+                name,
+                content,
+            },
+            ...messages,
+        ];
+    }
+
     let currentMessage = "";
     let sendMessage: (msg: Message) => void = (msg: Message) => {};
 
     let onOpen = () => {
         connected = true;
-        if (!isHost && !isSpectator) {
+        if (!isHost) {
             // not host and spec -> client player
             sendMessage({
                 msgType: MsgType.Connect,
-                originName: playerName,
-                content: ""
-            })
-        }
-
-        if (isHost) {
-            newGame();
+                originName: localName,
+                content: isSpectator? "": "client" ,
+            });
         }
     };
 
-    const commands = new Set([
-        "#reset",
-        "#play",
-        "#rewind",
-        "#commit",
-        "#changeSize",
-        "#load",
-    ]);
-
     let onMessage = (msg: Message) => {
-        const blocks = msg.split(" ");
-
-        switch (blocks[0]) {
-            case "#reset":
-                const color = parseInt(blocks[1]);
+        switch (msg.msgType) {
+            case MsgType.Reset:
+                const color = parseInt(msg.content);
                 reset(color);
                 break;
-            case "#play": {
-                const [row, col] = blocks[1]
+            case MsgType.Play: {
+                const [row, col] = msg.content
                     .split(",")
                     .map((item) => parseInt(item));
                 play(row, col);
                 break;
             }
-            case "#rewind": {
-                const index = parseInt(blocks[1]);
+            case MsgType.Rewind: {
+                const index = parseInt(msg.content);
                 board.rewind(index);
                 break;
             }
-            case "#commit": {
-                const index = parseInt(blocks[1]);
+            case MsgType.Commit: {
+                const index = parseInt(msg.content);
                 board.deleteFuture(index);
                 break;
             }
-            case "#changeSize": {
-                const newSize = parseInt(blocks[1]);
+            case MsgType.ChangeSize: {
+                const newSize = parseInt(msg.content);
                 if (newSize != board.size) {
                     changeBoardSize(newSize);
                 }
                 break;
             }
-            case "#load": {
-                const input = msg.slice(6);
+            case MsgType.Load: {
+                const input = msg.content;
                 console.log(input);
 
                 loadBoard(input, false);
+                break;
+            }
+            case MsgType.Connect: {
+                // received by host only when player connects
+                if (isHost) {
+                    if (msg.content === "client") {
+                        clientName = msg.originName;
+                    }
+
+                    sendMessage({
+                        msgType: MsgType.PlayerInfo,
+                        originName: localName,
+                        content: JSON.stringify({
+                            hostName,
+                            clientName
+                        })
+                    })
+                }
+                addChatItem(msg.originName, "connected");
+                break;
             }
 
-            default: {
-                messages = ["opponent: " + msg, ...messages];
+            case MsgType.PlayerInfo: {
+                const infos: PlayersInfo = JSON.parse(msg.content);
+                hostName = infos.hostName;
+                clientName = infos.clientName;
+                break;
             }
+
+            case MsgType.Text: {
+                addChatItem(msg.originName, msg.content);
+                break;
+            }
+
+            default:
+                alert(`MsgType not implemented: ${msg}`);
         }
     };
 
@@ -140,11 +202,10 @@
         if (roomName.length == 0) {
             return alert("Must include a room name to connect or create game!");
         }
-        if (isHost){
-            sendMessage = startAsHost(roomName, onOpen, onMessage)
-        }
-        else{
-            sendMessage = conToHost(roomName, onOpen, onMessage, );
+        if (isHost) {
+            sendMessage = startAsHost(roomName, onOpen, onMessage);
+        } else {
+            sendMessage = conToHost(roomName, onOpen, onMessage);
         }
     }
 
@@ -156,6 +217,11 @@
     onMount(() => {
         // ninuki board state
         board = new Board(19, canvas);
+        let name = localStorage.getItem("playerName");
+        if (name == null) {
+            name = "";
+        }
+        localName = name;
     });
 
     /*
@@ -165,15 +231,29 @@
     */
 
     function newGame() {
-        const myColor = Math.random() > 0.5 ? 1 : 2;
-        const opColor = opponent(myColor);
 
-        reset(myColor);
-        sendMessage(`#reset ${opColor}`);
+         hostColor =  Math.random() > 0.5 ? BLACK: WHITE;
+        clientColor = opponent(hostColor);
+
+        if (isHost){
+             reset(hostColor)
+        }
+        else{
+            reset(clientColor)
+        }
+ 
+        const msg: Message = {
+            msgType: MsgType.Reset,
+            originName: localName,
+            content: `${hostColor}`,
+        };
+        sendMessage(msg);
     }
 
     function reset(color: number) {
         connected = true;
+        hostColor = color;
+        clientColor = opponent(color);
         board.reset(color);
     }
     function play(row: number, col: number) {
@@ -182,33 +262,52 @@
 
     function sendTextMessage() {
         if (!currentMessage) return;
-        if (commands.has(currentMessage.split(" ")[0])) {
-            currentMessage = currentMessage.slice(1);
-        }
-        messages.unshift("you: " + currentMessage);
+        const msg: ChatItem = {
+            role: localRole,
+            content: currentMessage,
+            color: isSpectator ? -1 : board.playerColor,
+        };
+        messages.unshift(msg);
         messages = messages;
-        sendMessage(currentMessage);
+
+        sendMessage({
+            content: currentMessage,
+            msgType: MsgType.Text,
+            originName: localName,
+        });
         currentMessage = "";
     }
 
     function rewind(index: number) {
         board.rewind(index);
-        sendMessage(`#rewind ${index}`);
+        sendMessage({
+            content: `${index}`,
+            msgType: MsgType.Rewind,
+            originName: localName,
+        });
     }
 
     function commit(index: number) {
         board.deleteFuture(index);
-        sendMessage(`#commit ${index}`);
+        sendMessage({
+            content: `${index}`,
+            msgType: MsgType.Commit,
+            originName: localName,
+        });
     }
 
     function changeBoardSize(newSize: number, sendMsg = false) {
-        board.changeSize(newSize);
-        if (board.currentPlayer != WALL) {
-            board.currentPlayer = BLACK;
-            $currentPlayer = BLACK;
+        if (!connected && !board.selfPlay) {
+            return;
         }
+        board.changeSize(newSize);
+
         if (sendMsg) {
-            sendMessage(`#changeSize ${newSize}`);
+            sendMessage({
+                content: `${newSize}`,
+                msgType: MsgType.ChangeSize,
+                originName: localName,
+            });
         }
     }
 
@@ -241,13 +340,21 @@
         }
 
         if (sendMsg) {
-            sendMessage(`#load ${input}`);
+            sendMessage({
+                content: input,
+                msgType: MsgType.Load,
+                originName: localName,
+            });
         }
     }
 
     $: {
         if ($lastPlay !== undefined && !board.selfPlay) {
-            sendMessage(`#play ${$lastPlay[0]},${$lastPlay[1]}`);
+            sendMessage({
+                content: `${$lastPlay[0]},${$lastPlay[1]}`,
+                msgType: MsgType.Play,
+                originName: localName,
+            });
         }
     }
 
@@ -288,88 +395,103 @@
 
 <h1>WebNuki!</h1>
 <p>Duel in Ninuki on the web!</p>
+<Dropdown title="Start game" show>
+    <div class="rowGroup">
+        <!-- <p>Room Name:</p> -->
+        <InputField
+            placeholder="Room code here"
+            disabled={isHost}
+            bind:value={roomName}
+            label="Room Code:"
+        />
 
-<div class="rowGroup">
-    <!-- <p>Room Name:</p> -->
-    <InputField
-        placeholder="Room code here"
-        disabled={isHost}
-        bind:value={roomName}
-        label="Room Code:"
-    />
+        <InputField
+            placeholder="name..."
+            disabled={connected}
+            bind:value={localName}
+            label="Player name"
+            on:blur={() => {
+                console.log("blurr out");
+            }}
+        />
+    </div>
 
-    <InputField
-        placeholder="name..."
-        disabled={connected}
-        bind:value={playerName}
-        label="Player name"
-        on:blur={()=>{
-            console.log("blurr out");
-            
-        }}
-    />
-</div>
+    <div class="rowGroup">
+        <Button
+            on:click={(e) => {
+                isHost = true;
+                tryConnect();
+            }}
+            disabled={connected}>Make a room</Button
+        >
+        <Button
+            on:click={(e) => {
+                isHost = false;
+                tryConnect();
+            }}
+            disabled={connected || isHost}>Connect to room</Button
+        >
 
-<div class="rowGroup">
-    <Button
-        on:click={(e) => {
-            isHost = true;
-            tryConnect();
-        }}
-        disabled={connected}>Make a room</Button
-    >
-    <Button
-        on:click={(e) => {
-            isHost = false;
-            tryConnect();
-        }}
-        disabled={connected || isHost}>Connect to room</Button
-    >
+        <Button
+            on:click={() => {
+                isHost = false;
+                isSpectator = true;
+                tryConnect();
+            }}
+            disabled={connected}
+        >
+            Spectate
+        </Button>
 
-    <Button
-        on:click={() => {
-            board.reset(BLACK);
-            board.selfPlay = true;
-            connected = true;
-        }}
-        disabled={connected}
-    >
-        Self play
-    </Button>
+        <Button
+            on:click={() => {
+                board.reset(BLACK);
+                board.selfPlay = true;
+                connected = true;
+            }}
+            disabled={connected}
+        >
+            Self play
+        </Button>
+        <Button
+            on:click={() => {
+                showHelp = true;
+            }}
+        >
+            Help
+        </Button>
+    </div>
 
-    <Button on:click={newGame} disabled={!connected}>New Game</Button>
-    <Button
-        on:click={() => {
-            showHelp = true;
-        }}
-    >
-        Help
-    </Button>
+    <div class="rowGroup">
+        <Button on:click={newGame} disabled={!connected}>New Game</Button>
 
-    <div class="vertDivider"></div>
-    <Button
-        on:click={() => {
-            showOptions = true;
-        }}>Game options</Button
-    >
+        <div class="vertDivider"></div>
+        <Button
+            on:click={() => {
+                showOptions = true;
+            }}>Game options</Button
+        >
 
-    <Button
-        on:click={() => {
-            showLoad = true;
-        }}
-    >
-        Load
-    </Button>
+        <Button
+            on:click={() => {
+                showLoad = true;
+            }}
+        >
+            Load
+        </Button>
 
-    <Button
-        on:click={() => {
-            exportBoard();
-            showExport = true;
-        }}
-    >
-        Export
-    </Button>
-</div>
+        <Button
+            on:click={() => {
+                exportBoard();
+                showExport = true;
+            }}
+        >
+            Export
+        </Button>
+    </div>
+</Dropdown>
+
+<div class="rowGroup"></div>
 
 <div class="rowGroup" style="height:740px">
     <div id="canvasHolder">

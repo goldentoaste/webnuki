@@ -1,5 +1,8 @@
 <script lang="ts">
-  export let data: string[];
+    import type { ChatItem } from "$lib/peerTypes";
+
+    // TODO fix this
+  export let data: ChatItem[];
 </script>
 
 <div class="messageContainer">
