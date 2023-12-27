@@ -39,6 +39,7 @@
     } from "$lib/peerTypes";
     import Dropdown from "$lib/components/dropdown.svelte";
     import { json } from "@sveltejs/kit";
+    import Scoreboard from "$lib/components/scoreboard.svelte";
     //  peer connection garbage.
     let conToHost: (
         roomName: string,
@@ -64,8 +65,8 @@
     let isHost = false;
     let isSpectator = false;
     let localName = "";
-    let hostName = "";
-    let clientName = "";
+    let hostName = "host name";
+    let clientName =  "client name";
     let hostColor = -1;
     let clientColor = -1;
     let localRole = UserRole.Player;
@@ -507,7 +508,13 @@
     </div>
     <div class="colGroup">
         <div id="stats">
-            {#if board}
+            <Scoreboard
+            {hostColor}
+            {clientName}
+            {hostName}
+
+            ></Scoreboard>
+            <!-- {#if board}
                 <span>You are player: {colorToName($playerColor)}</span>
                 <span>Current player: {colorToName($currentPlayer)}</span>
                 <span>Black score: {$blackScore}</span>
@@ -516,7 +523,7 @@
                 {#if $winningPlayer == BLACK || $winningPlayer == WHITE}
                     {colorToName($winningPlayer)} has won the game!
                 {/if}
-            {/if}
+            {/if} -->
         </div>
         {#if board}
             <HistoryList

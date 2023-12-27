@@ -50,6 +50,6 @@
 
         flex: 1 1 auto;
 
-        width: 300px;
+        width: auto;
     }
 </style>
