@@ -85,12 +85,7 @@
         {
             content: "messages and plays will be here",
         },
-        {
-            name:"abc",
-            color:BLACK,
-            content:"stuff stuff",
-            role: UserRole.Player
-        }
+       
     ];
 
     function addChatItem(name: string, content: string) {
@@ -128,7 +123,9 @@
                 originName: localName,
                 content: isSpectator? "": "client" ,
             });
+            addChatItem("", "connect to host");
         }
+
     };
 
     let onMessage = (msg: Message) => {
@@ -483,7 +480,7 @@
     <div class="horiDivider"></div>
 
     <div class="rowGroup">
-        <Button on:click={newGame} disabled={!connected}>New Game</Button>
+        <Button on:click={newGame} disabled={!connected || isSpectator}>New Game</Button>
 
         <div class="vertDivider"></div>
         <Button
@@ -526,7 +523,7 @@
             height="700px"
         />
     </div>
-    <div class="colGroup" class:noclick={isSpectator}>
+    <div class="colGroup" >
         <div id="stats">
             <Scoreboard
             {hostColor}

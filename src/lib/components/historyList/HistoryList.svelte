@@ -6,6 +6,7 @@
 
     export let histories: History[];
     export let currentIndex: number;
+    export let allowRewind = true;
    
 
     const dispatch = createEventDispatcher<{ indexChange: number }  >();
@@ -24,8 +25,6 @@
             highLight={index == currentIndex}
 
             on:click={() => {
-               
-
                 if (index == currentIndex){
                     // @ts-ignore
                     dispatch("commit", index);
