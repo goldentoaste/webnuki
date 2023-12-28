@@ -38,7 +38,7 @@
         type PlayersInfo,
     } from "$lib/peerTypes";
     import Dropdown from "$lib/components/dropdown.svelte";
-    import { json } from "@sveltejs/kit";
+
     import Scoreboard from "$lib/components/scoreboard.svelte";
     //  peer connection garbage.
     let conToHost: (
@@ -126,6 +126,8 @@
     };
 
     let onMessage = (msg: Message) => {
+        console.log(msg);
+        
         switch (msg.msgType) {
             case MsgType.Reset:
                 const color = parseInt(msg.content);
@@ -203,6 +205,16 @@
         if (roomName.length == 0) {
             return alert("Must include a room name to connect or create game!");
         }
+        if (localName.length == 0){
+            return alert("please choose a user name")
+        }
+
+        localStorage.setItem("playerName", localName);
+        if (isHost){
+            hostName = localName;
+        }
+
+
         if (isHost) {
             sendMessage = startAsHost(roomName, onOpen, onMessage);
         } else {
@@ -225,23 +237,14 @@
         localName = name;
     });
 
-    /*
-    Messages to handle
-    #play row,col - plays for the current player
-    #reset color - calls for reset, also set the player color to color. (always start with black player)
-    */
 
     function newGame() {
 
          hostColor =  Math.random() > 0.5 ? BLACK: WHITE;
-        clientColor = opponent(hostColor);
+        // clientColor = opponent(hostColor);
 
-        if (isHost){
-             reset(hostColor)
-        }
-        else{
-            reset(clientColor)
-        }
+            reset(hostColor)
+        
  
         const msg: Message = {
             msgType: MsgType.Reset,
@@ -252,10 +255,19 @@
     }
 
     function reset(color: number) {
+        console.log("resetting");
+        
         connected = true;
         hostColor = color;
         clientColor = opponent(color);
-        board.reset(color);
+
+        if(isHost){
+            board.reset(hostColor);
+        }
+        else{
+            board.reset(clientColor);
+        }
+        
     }
     function play(row: number, col: number) {
         board.playMove(row, col);
@@ -267,6 +279,7 @@
             role: localRole,
             content: currentMessage,
             color: isSpectator ? -1 : board.playerColor,
+            name: localName
         };
         messages.unshift(msg);
         messages = messages;
@@ -411,9 +424,7 @@
             disabled={connected}
             bind:value={localName}
             label="Player Name"
-            on:blur={() => {
-                console.log("blurr out");
-            }}
+        
         />
     </div>
 

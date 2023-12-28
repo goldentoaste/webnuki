@@ -8,11 +8,11 @@
     export let pattern = "[\\s\\S]*";
     export let label = "";
     import { fade, fly } from "svelte/transition";
+
+
     let showMsg = false;
     let dispatch = createEventDispatcher();
     function onClick() {
-        console.log("on clickk");
-
         if (disabled && value.length > 0) {
             navigator.clipboard.writeText(value).then((e) => {
                 showMsg = true;
@@ -37,6 +37,11 @@
             dispatch("enter");
         }
     }
+
+
+    function focusOut(){
+        dispatch("focusOut");
+    }
     
 </script>
 
@@ -58,7 +63,7 @@
         on:input={checkInput}
         {value}
         on:keypress={enter}
-        on:blur
+        on:blur={()=>{focusOut()}}
     />
 
     {#if showMsg}
