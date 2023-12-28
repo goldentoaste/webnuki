@@ -85,6 +85,12 @@
         {
             content: "messages and plays will be here",
         },
+        {
+            name:"abc",
+            color:BLACK,
+            content:"stuff stuff",
+            role: UserRole.Player
+        }
     ];
 
     function addChatItem(name: string, content: string) {
@@ -481,12 +487,14 @@
 
         <div class="vertDivider"></div>
         <Button
+        disabled={isSpectator}
             on:click={() => {
                 showOptions = true;
             }}>Game options</Button
         >
 
         <Button
+        disabled={isSpectator}
             on:click={() => {
                 showLoad = true;
             }}
@@ -495,6 +503,7 @@
         </Button>
 
         <Button
+        disabled={isSpectator}
             on:click={() => {
                 exportBoard();
                 showExport = true;
@@ -512,12 +521,12 @@
         <canvas
             id="nukiCanvas"
             bind:this={canvas}
-            class:noclick={!connected}
+            class:noclick={!connected || isSpectator}
             width="700px"
             height="700px"
         />
     </div>
-    <div class="colGroup">
+    <div class="colGroup" class:noclick={isSpectator}>
         <div id="stats">
             <Scoreboard
             {hostColor}
@@ -690,4 +699,6 @@
     textarea::placeholder {
         color: var(--fg1);
     }
+
+    
 </style>
