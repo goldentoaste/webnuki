@@ -410,6 +410,23 @@
     let showHelp = false;
 </script>
 
+
+<svelte:window
+    on:keydown={(e) => {
+        if(e.key === "ArrowUp"){
+            if ($historyIndex === -1 ){return;}
+            $historyIndex -= 1;
+            rewind($historyIndex)
+        }
+        else if (e.key === "ArrowDown"){
+            if($historyIndex === $history.length - 1){return;}
+            $historyIndex += 1;
+            rewind($historyIndex)
+        }
+      
+    }}
+/>
+
 <h1>WebNuki!</h1>
 <p>Duel in Ninuki on the web!</p>
 <Dropdown title="Start game" show>

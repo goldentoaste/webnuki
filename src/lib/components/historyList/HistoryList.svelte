@@ -7,28 +7,25 @@
     export let histories: History[];
     export let currentIndex: number;
     export let allowRewind = true;
-   
 
-    const dispatch = createEventDispatcher<{ indexChange: number }  >();
+    const dispatch = createEventDispatcher<{ indexChange: number }>();
 
-    let container : HTMLDivElement;
-
-
-
+    let container: HTMLDivElement;
 </script>
 
-<div class="historyContainer" bind:this={container}>
+
+
+<div class="historyContainer" bind:this={container} >
     {#each histories as history, index}
         <HistoryItem
             {history}
             {index}
             highLight={index == currentIndex}
-
             on:click={() => {
-                if (index == currentIndex){
+                if (index == currentIndex) {
                     // @ts-ignore
                     dispatch("commit", index);
-                }else{
+                } else {
                     currentIndex = index;
                     dispatch("indexChange", currentIndex);
                 }
