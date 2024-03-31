@@ -23,9 +23,9 @@ interface BoardState {
 export const winningPlayer = writable(WALL);
 export const blackScore = writable(0);
 export const whiteScore = writable(0);
-export const currentPlayer = writable(BLACK);
+export const currentPlayer = writable(WALL);
 export const lastPlay = writable<number[] | undefined>(undefined);
-export const playerColor = writable(BLACK)
+export const playerColor = writable(WALL)
 export const boardSize = writable(9);
 export const history = writable<History[]>([]);
 export const historyIndex = writable<number>(-1);

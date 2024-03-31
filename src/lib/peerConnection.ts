@@ -66,7 +66,6 @@ export function connectAsClient(roomName: string, onOpen: () => void, onMessage:
     }
 
     const interval = setInterval(() => {
-        console.log(self); // debug when is self properly initialized, to avoid addition connection attempts
         host = self.connect(roomId);
 
 

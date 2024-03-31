@@ -56,7 +56,7 @@
                     {history.winner == BLACK ? "Black" : "White"} wins by {history
                         .captures.length > 0
                         ? "10 captures"
-                        : "Pente"}.</span
+                        : "Pente"}!</span
                 >
             {:else if history.captures.length === 0}
                 <span class="lowVis">No capture</span>
@@ -99,7 +99,7 @@
         height: 1rem;
         min-width: 1rem;
 
-        border: 2px solid var(--fg1);
+        border: 2px solid var(--fg1) !important;
 
         border-radius: 50%;
     }
@@ -123,6 +123,7 @@
     #itemContainer {
         padding: 0.5rem;
         box-sizing: border-box;
+        border: 2px solid transparent;
     }
 
     .lowVis {
@@ -131,7 +132,6 @@
 
     .disabled {
         transition: opacity 0.4s ease-out;
-
         opacity: 0;
         visibility: hidden;
     }
@@ -142,6 +142,6 @@
     }
 
     .highLight {
-        border: 2px solid var(--red);
+        border: 2px solid var(--red) !important;
     }
 </style>

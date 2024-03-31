@@ -4,21 +4,23 @@
         currentPlayer,
         opponent,
         whiteScore,
+        winningPlayer,
     } from "$lib/board";
     import { BLACK, WHITE } from "$lib/boardLib";
 
     export let hostName = "";
     export let clientName = "";
     export let hostColor: number;
-
-    let clientColor: number;
-
     $: clientColor = opponent(hostColor);
 </script>
 
 <div class="parent">
     <!--  -->
-    <div class="col" class:active={hostColor === $currentPlayer}>
+    <div
+        class="col"
+        class:active={hostColor === $currentPlayer}
+        class:winner={hostColor === $winningPlayer}
+    >
         <!-- host -->
         <div class="row">
             <div
@@ -35,7 +37,11 @@
 
     <div class="vertDivider"></div>
 
-    <div class="col" class:active={clientColor === $currentPlayer}>
+    <div
+        class="col"
+        class:active={clientColor === $currentPlayer}
+        class:winner={clientColor === $winningPlayer}
+    >
         <!-- client -->
         <div class="row">
             <div
@@ -53,11 +59,11 @@
 
 <style>
     .active {
-        border: 2px solid var(--red);
+        border: 2px solid var(--red) !important;
     }
 
     .winner {
-        border: 2px solid var(--yellow);
+        border: 2px solid var(--yellow) !important;
     }
 
     .row {
@@ -68,10 +74,11 @@
     .col {
         display: flex;
         flex-direction: column;
-        gap: 0.5rem;
-        margin: 0.25rem;
+        margin: 0.2rem;
         flex: 1;
-        padding: 0.5rem;
+        padding: 0.4rem;
+
+        border: 2px solid transparent;
     }
 
     .parent {
@@ -101,7 +108,6 @@
         height: auto;
         width: 2px;
         background-color: var(--bg3);
-
         margin: 0.5rem 0;
     }
 
@@ -110,5 +116,6 @@
         max-width: 100px;
         text-overflow: ellipsis;
         overflow: hidden;
+        white-space: nowrap;
     }
 </style>

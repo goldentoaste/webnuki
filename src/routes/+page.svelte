@@ -67,8 +67,8 @@
     let localName = "";
     let hostName = "host name";
     let clientName = "client name";
-    let hostColor = -1;
-    let clientColor = -1;
+    let hostColor = EMPTY;
+    let clientColor = EMPTY;
     let localRole = UserRole.Player;
 
     $: if (isHost) {
@@ -78,6 +78,7 @@
     }
 
     let connected = false;
+    let gameStarted = false;
     let messages: ChatItem[] = [
         {
             content: "welcome to webnuki",
@@ -122,7 +123,7 @@
                 originName: localName,
                 content: isSpectator ? "" : "client",
             });
-            addChatItem("", "connect to host");
+            addChatItem(localName, "connect to host");
         }
     };
 
@@ -161,7 +162,6 @@
             case MsgType.Load: {
                 const input = msg.content;
                 console.log(input);
-
                 loadBoard(input, false);
                 break;
             }
@@ -184,19 +184,16 @@
                 addChatItem(msg.originName, "connected");
                 break;
             }
-
             case MsgType.PlayerInfo: {
                 const infos: PlayersInfo = JSON.parse(msg.content);
                 hostName = infos.hostName;
                 clientName = infos.clientName;
                 break;
             }
-
             case MsgType.Text: {
                 addChatItem(msg.originName, msg.content);
                 break;
             }
-
             default:
                 alert(`MsgType not implemented: ${msg}`);
         }
@@ -239,8 +236,6 @@
 
     function newGame() {
         hostColor = Math.random() > 0.5 ? BLACK : WHITE;
-        // clientColor = opponent(hostColor);
-
         reset(hostColor);
 
         const msg: Message = {
@@ -253,7 +248,7 @@
 
     function reset(color: number) {
         console.log("resetting");
-
+        gameStarted = true;
         connected = true;
         hostColor = color;
         clientColor = opponent(color);
@@ -273,7 +268,7 @@
         const msg: ChatItem = {
             role: localRole,
             content: currentMessage,
-            color: isSpectator ? -1 : board.playerColor,
+            color: isSpectator || !connected ? -1 : board.playerColor,
             name: localName,
         };
         messages.unshift(msg);
@@ -473,6 +468,7 @@
                 board.reset(BLACK);
                 board.selfPlay = true;
                 connected = true;
+                gameStarted = true;
 
                 hostName = "Black";
                 clientName = "White";
@@ -536,7 +532,7 @@
         <canvas
             id="nukiCanvas"
             bind:this={canvas}
-            class:noclick={!connected || isSpectator}
+            class:noclick={!connected || !gameStarted || isSpectator}
             width="700px"
             height="700px"
         />
@@ -544,16 +540,6 @@
     <div class="colGroup">
         <div id="stats">
             <Scoreboard {hostColor} {clientName} {hostName}></Scoreboard>
-            <!-- {#if board}
-                <span>You are player: {colorToName($playerColor)}</span>
-                <span>Current player: {colorToName($currentPlayer)}</span>
-                <span>Black score: {$blackScore}</span>
-                <span>White score: {$whiteScore}</span>
-
-                {#if $winningPlayer == BLACK || $winningPlayer == WHITE}
-                    {colorToName($winningPlayer)} has won the game!
-                {/if}
-            {/if} -->
         </div>
         {#if board}
             <HistoryList
