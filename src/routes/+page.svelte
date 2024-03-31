@@ -66,7 +66,7 @@
     let isSpectator = false;
     let localName = "";
     let hostName = "host name";
-    let clientName =  "client name";
+    let clientName = "client name";
     let hostColor = -1;
     let clientColor = -1;
     let localRole = UserRole.Player;
@@ -85,7 +85,6 @@
         {
             content: "messages and plays will be here",
         },
-       
     ];
 
     function addChatItem(name: string, content: string) {
@@ -121,16 +120,15 @@
             sendMessage({
                 msgType: MsgType.Connect,
                 originName: localName,
-                content: isSpectator? "": "client" ,
+                content: isSpectator ? "" : "client",
             });
             addChatItem("", "connect to host");
         }
-
     };
 
     let onMessage = (msg: Message) => {
         console.log(msg);
-        
+
         switch (msg.msgType) {
             case MsgType.Reset:
                 const color = parseInt(msg.content);
@@ -179,9 +177,9 @@
                         originName: localName,
                         content: JSON.stringify({
                             hostName,
-                            clientName
-                        })
-                    })
+                            clientName,
+                        }),
+                    });
                 }
                 addChatItem(msg.originName, "connected");
                 break;
@@ -208,15 +206,14 @@
         if (roomName.length == 0) {
             return alert("Must include a room name to connect or create game!");
         }
-        if (localName.length == 0){
-            return alert("please choose a user name")
+        if (localName.length == 0) {
+            return alert("please choose a user name");
         }
 
         localStorage.setItem("playerName", localName);
-        if (isHost){
+        if (isHost) {
             hostName = localName;
         }
-
 
         if (isHost) {
             sendMessage = startAsHost(roomName, onOpen, onMessage);
@@ -240,15 +237,12 @@
         localName = name;
     });
 
-
     function newGame() {
-
-         hostColor =  Math.random() > 0.5 ? BLACK: WHITE;
+        hostColor = Math.random() > 0.5 ? BLACK : WHITE;
         // clientColor = opponent(hostColor);
 
-            reset(hostColor)
-        
- 
+        reset(hostColor);
+
         const msg: Message = {
             msgType: MsgType.Reset,
             originName: localName,
@@ -259,18 +253,16 @@
 
     function reset(color: number) {
         console.log("resetting");
-        
+
         connected = true;
         hostColor = color;
         clientColor = opponent(color);
 
-        if(isHost){
+        if (isHost) {
             board.reset(hostColor);
-        }
-        else{
+        } else {
             board.reset(clientColor);
         }
-        
     }
     function play(row: number, col: number) {
         board.playMove(row, col);
@@ -282,7 +274,7 @@
             role: localRole,
             content: currentMessage,
             color: isSpectator ? -1 : board.playerColor,
-            name: localName
+            name: localName,
         };
         messages.unshift(msg);
         messages = messages;
@@ -410,20 +402,21 @@
     let showHelp = false;
 </script>
 
-
 <svelte:window
     on:keydown={(e) => {
-        if(e.key === "ArrowUp"){
-            if ($historyIndex === -1 ){return;}
+        if (e.key === "ArrowUp") {
+            if ($historyIndex === -1) {
+                return;
+            }
             $historyIndex -= 1;
-            rewind($historyIndex)
-        }
-        else if (e.key === "ArrowDown"){
-            if($historyIndex === $history.length - 1){return;}
+            rewind($historyIndex);
+        } else if (e.key === "ArrowDown") {
+            if ($historyIndex === $history.length - 1) {
+                return;
+            }
             $historyIndex += 1;
-            rewind($historyIndex)
+            rewind($historyIndex);
         }
-      
     }}
 />
 
@@ -442,9 +435,9 @@
         <InputField
             placeholder="name..."
             disabled={connected}
+            clickCopy={false}
             bind:value={localName}
             label="Player Name"
-        
         />
     </div>
 
@@ -480,6 +473,12 @@
                 board.reset(BLACK);
                 board.selfPlay = true;
                 connected = true;
+
+                hostName = "Black";
+                clientName = "White";
+
+                hostColor = BLACK;
+                clientColor = WHITE;
             }}
             disabled={connected}
         >
@@ -497,18 +496,20 @@
     <div class="horiDivider"></div>
 
     <div class="rowGroup">
-        <Button on:click={newGame} disabled={!connected || isSpectator}>New Game</Button>
+        <Button on:click={newGame} disabled={!connected || isSpectator}
+            >New Game</Button
+        >
 
         <div class="vertDivider"></div>
         <Button
-        disabled={isSpectator}
+            disabled={isSpectator}
             on:click={() => {
                 showOptions = true;
             }}>Game options</Button
         >
 
         <Button
-        disabled={isSpectator}
+            disabled={isSpectator}
             on:click={() => {
                 showLoad = true;
             }}
@@ -517,7 +518,7 @@
         </Button>
 
         <Button
-        disabled={isSpectator}
+            disabled={isSpectator}
             on:click={() => {
                 exportBoard();
                 showExport = true;
@@ -540,14 +541,9 @@
             height="700px"
         />
     </div>
-    <div class="colGroup" >
+    <div class="colGroup">
         <div id="stats">
-            <Scoreboard
-            {hostColor}
-            {clientName}
-            {hostName}
-
-            ></Scoreboard>
+            <Scoreboard {hostColor} {clientName} {hostName}></Scoreboard>
             <!-- {#if board}
                 <span>You are player: {colorToName($playerColor)}</span>
                 <span>Current player: {colorToName($currentPlayer)}</span>
@@ -675,6 +671,7 @@
         display: flex;
         flex-direction: column;
         gap: 0.5rem;
+        min-width: 320px;
     }
 
     .vertDivider {
@@ -685,13 +682,13 @@
         margin: 0 0.5rem;
     }
 
-    .horiDivider{
+    .horiDivider {
         height: 2px;
         width: auto;
 
         background-color: var(--bg3);
 
-        margin: 0.25rem 0.5rem ;
+        margin: 0.25rem 0.5rem;
     }
 
     textarea {
@@ -713,6 +710,4 @@
     textarea::placeholder {
         color: var(--fg1);
     }
-
-    
 </style>

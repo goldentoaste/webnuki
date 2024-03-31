@@ -7,6 +7,8 @@
     export let suffix = "";
     export let pattern = "[\\s\\S]*";
     export let label = "";
+    export let style ="";
+    export let clickCopy = true;
     import { fade, fly } from "svelte/transition";
 
 
@@ -47,7 +49,7 @@
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <!-- svelte-ignore a11y-no-static-element-interactions -->
-<div class="parent" class:clickable={disabled} on:click={onClick}>
+<div class="parent" class:clickable={disabled && clickCopy} on:click={onClick} {style}>
     {#if label}
         <span class="label">
             {label}

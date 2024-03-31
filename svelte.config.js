@@ -14,7 +14,6 @@ const config = {
 		adapter: adapter()
 	},
 	onwarn: (warning, handler) => {
-		
 		if (warning.code.startsWith('svelte(a11y-')) {
 			return;
 		}

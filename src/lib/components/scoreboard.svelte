@@ -34,7 +34,7 @@
     </div>
 
     <div class="vertDivider"></div>
-<!--  -->
+
     <div class="col" class:active={clientColor === $currentPlayer}>
         <!-- client -->
         <div class="row">
@@ -70,7 +70,7 @@
         flex-direction: column;
         gap: 0.5rem;
         margin: 0.25rem;
-
+        flex: 1;
         padding: 0.5rem;
     }
 
@@ -83,6 +83,7 @@
     .circle {
         width: 1rem;
         height: 1rem;
+        min-width: 1rem;
 
         border: 2px solid var(--fg1);
 
@@ -104,11 +105,10 @@
         margin: 0.5rem 0;
     }
 
-
     span {
         margin-left: 0.5rem;
         max-width: 100px;
-        text-overflow:ellipsis;
+        text-overflow: ellipsis;
         overflow: hidden;
     }
 </style>

@@ -11,15 +11,17 @@
 
     let showButton = false;
 
-    let root : HTMLElement;
+    let root: HTMLElement;
 
-    $:{
-
-        if(highLight && root){
-            root.scrollIntoView({block: "center", inline: "nearest",behavior:"smooth"} )
+    $: {
+        if (highLight && root) {
+            root.scrollIntoView({
+                block: "center",
+                inline: "nearest",
+                behavior: "smooth",
+            });
         }
     }
-
 </script>
 
 <div
@@ -51,7 +53,10 @@
             </div>
             {#if history.winner != EMPTY}
                 <span>
-                    {history.winner == BLACK ? "Black" : "White"} wins by {history.captures.length > 0? "10 captures" : "Pente"}.</span
+                    {history.winner == BLACK ? "Black" : "White"} wins by {history
+                        .captures.length > 0
+                        ? "10 captures"
+                        : "Pente"}.</span
                 >
             {:else if history.captures.length === 0}
                 <span class="lowVis">No capture</span>
@@ -72,7 +77,9 @@
             {/if}
         </div>
         <div id="buttonWrapper" class:disabled={!showButton}>
-            <Button on:click disabled={!showButton}>{highLight? "Commit": "Rewind" }</Button>
+            <Button on:click disabled={!showButton}
+                >{highLight ? "Commit" : "Rewind"}</Button
+            >
         </div>
     </div>
 </div>
@@ -90,6 +97,7 @@
     #circle {
         width: 1rem;
         height: 1rem;
+        min-width: 1rem;
 
         border: 2px solid var(--fg1);
 
@@ -114,8 +122,7 @@
 
     #itemContainer {
         padding: 0.5rem;
-
-        /* width: fit-content; */
+        box-sizing: border-box;
     }
 
     .lowVis {
