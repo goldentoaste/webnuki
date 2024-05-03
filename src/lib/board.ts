@@ -1,10 +1,8 @@
 
-import { get, writable } from "svelte/store";
+import { writable } from "svelte/store";
 import type { History } from "./boardLib"
 import { WALL, BLACK, WHITE, EMPTY } from "./boardLib";
 import { BoardRenderer } from "./boardRenderer";
-import { render } from "svelte/server";
-
 
 interface BoardState {
     board: number[][];
@@ -13,11 +11,6 @@ interface BoardState {
     blackScore: number;
     whiteScore: number;
 }
-
-
-
-
-
 
 // update this when a player wins
 export const winningPlayer = writable(WALL);
@@ -124,7 +117,7 @@ export class Board {
 
         this.renderer.changeSize(size);
 
-      
+
     }
 
     addToHistory(h: History) {
@@ -200,7 +193,7 @@ export class Board {
         history.set(this.historyArr);
         historyIndex.set(this.historyIndex)
         console.log(this.currentPlayer);
-        
+
         currentPlayer.set(this.currentPlayer)
 
         // check if we need to undo or redo a player winning after applying history
@@ -239,7 +232,7 @@ export class Board {
         this.whiteScore = state.whiteScore;
     }
 
-    reset(color: number , changePlayer = false) {
+    reset(color: number, changePlayer = false) {
         // TODO reset actions
         this.playerColor = color;
         playerColor.set(color)
@@ -253,10 +246,8 @@ export class Board {
         this.whiteScore = 0
         whiteScore.set(0)
 
-      if(changePlayer){
         winningPlayer.set(EMPTY);
         this.winningPlayer = EMPTY;
-      }
 
         lastPlay.set(undefined);
 

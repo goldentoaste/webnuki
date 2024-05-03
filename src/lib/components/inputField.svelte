@@ -7,10 +7,9 @@
     export let suffix = "";
     export let pattern = "[\\s\\S]*";
     export let label = "";
-    export let style ="";
+    export let style = "";
     export let clickCopy = true;
     import { fade, fly } from "svelte/transition";
-
 
     let showMsg = false;
     let dispatch = createEventDispatcher();
@@ -40,34 +39,35 @@
         }
     }
 
-
-    function focusOut(){
+    function focusOut() {
         dispatch("focusOut");
     }
-    
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <!-- svelte-ignore a11y-no-static-element-interactions -->
-<div class="parent" class:clickable={disabled && clickCopy} on:click={onClick} {style}>
+<div class="parent" {style}>
     {#if label}
         <span class="label">
             {label}
         </span>
     {/if}
-    <input
-        type="text"
-        {placeholder}
-        bind:this={inputField}
-        {disabled}
-        class:disabled
-        {pattern}
-        on:input={checkInput}
-        {value}
-        on:keypress={enter}
-        on:blur={()=>{focusOut()}}
-    />
-
+    <div class:clickable={disabled && clickCopy} on:click={onClick}>
+        <input
+            type="text"
+            {placeholder}
+            bind:this={inputField}
+            {disabled}
+            class:disabled
+            {pattern}
+            on:input={checkInput}
+            {value}
+            on:keypress={enter}
+            on:blur={() => {
+                focusOut();
+            }}
+        />
+    </div>
     {#if showMsg}
         <div
             class="msg"
@@ -80,7 +80,6 @@
             Copied!
         </div>
     {/if}
-
     <div class="suffix">{suffix}</div>
 </div>
 
@@ -105,18 +104,17 @@
         color: var(--bg3);
     }
 
+    input[disabled]{
+        pointer-events: none;
+    }
+
     .clickable {
         transition: filter 0.5s ease-out;
-        cursor: pointer;
+        cursor: pointer !important;
     }
 
-    .clickable:hover {
+    .clickable :hover {
         filter: brightness(1.2);
-    }
-
-    .disabled {
-        user-select: none;
-        pointer-events: none;
     }
 
     .msg {
@@ -128,6 +126,7 @@
         top: 50%;
         transform: translate(0, -50%);
         padding: 0.5rem;
+        z-index: 100;
     }
 
     .suffix {
@@ -141,7 +140,7 @@
         color: var(--bg2);
     }
 
-    .label{
+    .label {
         margin: 0 0.5rem;
     }
 </style>
