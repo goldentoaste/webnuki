@@ -3,12 +3,13 @@ import type {Message} from "$lib/peerTypes"
 
 const gameId = "7388b9d62fba";
 
+
 export function hostGame(roomName: string, onOpen: () => void, onMessage: (msg: Message) => void) {
     const roomId = gameId.concat(roomName)
     const self = new Peer(roomId);
 
     const peers = new Map<string, DataConnection>();
-
+    
     /**
     * send a message to all the client, used as host
     * since host is responsible for relaying all the client message.    
